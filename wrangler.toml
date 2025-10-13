@@ -1,18 +1,18 @@
-name = "tourmalinetech"  # Matches your Pages project name
-pages_build_output_dir = "./dist"  # Adjust to your site's build output (e.g., "./public" for plain HTML/JS)
+name = "tourmalinetech"  # Matches your Pages project
+pages_build_output_dir = "."  # Root dir for static files
 compatibility_date = "2025-10-13"
-compatibility_flags = ["nodejs_compat"]  # For Stripe's Node.js-like APIs
+compatibility_flags = ["nodejs_compat"]  # Enables Stripe deps
 
+# Env vars (use dashboard for secrets like STRIPE_KEY)
 [vars]
-# Optional: Hardcode non-secrets here (but prefer dashboard secrets for STRIPE_KEY, etc.)
 
-# KV binding example for stock caching (create KV namespace in dashboard, then bind here)
+# Optional KV for stock caching (create/bind in dashboard > KV)
 [[kv_namespaces]]
 binding = "STOCK_CACHE"
-id = "your-kv-namespace-id"  # From Cloudflare > KV > Create Namespace > Copy ID
+id = "your-kv-id-here"  # Replace after creating
 
-# D1 binding if you add a DB later (e.g., for order storage)
+# Optional D1 DB for orders
 # [[d1_databases]]
 # binding = "DB"
-# database_name = "orders"
+# database_name = "tourmaline-orders"
 # database_id = "your-d1-id"
