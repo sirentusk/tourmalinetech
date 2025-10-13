@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourmaline Tech | Megan Judge</title>
+    <meta property="og:title" content="Tourmaline Tech | Megan Judge">
+    <meta property="twitter:title" content="Tourmaline Tech | Megan Judge">
+    <meta property="og:site_name" content="Tourmaline Tech | Megan Judge">
+    <meta property="og:description" content="Megan Judge's Tourmaline Tech Dropshipping Store.">
+    <meta property="og:image" content="https://tourmalineteche.com/images/tourmaline-tech-logo.png">
+    <meta property="og:url" content="https://tourmalineteche.com/">
+    <meta property="og:locale" content="en_AU">
+    <meta property="og:type" content="website">
+    <meta name="author" content="Megan Judge">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#008080">
+    <link rel="icon" type="image/png" href="https://tourmalineteche.com/images/tourmaline-tech-logo.png">
+    <link rel="alternate" href="https://tourmalineteche.com/" hreflang="en">
+    <link rel="canonical" href="https://tourmalineteche.com/">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <img src="tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img">
+            </div>
+            <nav class="nav">
+                <ul class="nav-list">
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#products">Products</a></li>
+                    <li><a href="#cart">Cart</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                </ul>
+            </nav>
+            <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+        </div>
+    </header>
 
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h2>Welcome to Tourmaline Tech</h2>
+                <p>Discover vibrant tech gadgets inspired by the colors of rainbow tourmaline. Shop now and add a splash of color to your life!</p>
+                <a href="#products" class="cta-button">Shop Collection</a>
+            </div>
+        </section>
+
+        <section id="products" class="products">
+            <div class="container">
+                <h2>Featured Products</h2>
+                <div class="products-grid">
+                    <article class="product-card">
+                        <img src="https://via.placeholder.com/300x200?text=Teal+Tech+Case" alt="Teal Tech Case" loading="lazy">
+                        <h3>Teal Wireless Charger</h3>
+                        <p>A sleek charger in tourmaline teal—perfect for your devices.</p>
+                        <div class="price">$29.99</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://via.placeholder.com/300x200?text=Pink+Headphones" alt="Pink Headphones" loading="lazy">
+                        <h3>Pink Noise-Cancelling Headphones</h3>
+                        <p>Immerse in sound with our vibrant pink tourmaline-inspired headphones.</p>
+                        <div class="price">$89.99</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://via.placeholder.com/300x200?text=Purple+Mouse" alt="Purple Mouse" loading="lazy">
+                        <h3>Purple Gaming Mouse</h3>
+                        <p>Precision and style in a purple hue from rainbow tourmaline.</p>
+                        <div class="price">$49.99</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </article>
+                    <article class="product-card">
+                        <img src="https://via.placeholder.com/300x200?text=Green+Stand" alt="Green Phone Stand" loading="lazy">
+                        <h3>Green Adjustable Phone Stand</h3>
+                        <p>Keep your phone steady in emerald green tourmaline tones.</p>
+                        <div class="price">$19.99</div>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+        <section id="cart" class="cart">
+            <div class="container">
+                <h2>Your Cart</h2>
+                <p>Shopping cart functionality coming soon—powered by Stripe!</p>
+            </div>
+        </section>
+
+        <section id="contact" class="contact">
+            <div class="container">
+                <h2>Get in Touch</h2>
+                <form class="contact-form">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required>
+                    
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                    
+                    <label for="message">Message:</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                    
+                    <button type="submit">Send Message</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Tourmaline Tech. All rights reserved. | Powered by Cloudflare & Stripe</p>
+        </div>
+    </footer>
+
+    <script>
+        // Dark mode toggle
+        const themeToggle = document.querySelector('.theme-toggle');
+        const html = document.documentElement;
+
+        // Check for saved theme or default to system preference
+        const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        html.classList.toggle('dark', savedTheme === 'dark');
+        themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = html.classList.contains('dark') ? 'light' : 'dark';
+            html.classList.toggle('dark');
+            localStorage.setItem('theme', currentTheme);
+            themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        });
+    </script>
+</body>
+</html>
