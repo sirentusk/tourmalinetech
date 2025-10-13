@@ -1,13 +1,11 @@
 {
-  "name": "tourmaline-worker",
+  "name": "tourmalinetech",
   "version": "1.0.0",
   "dependencies": {
-    "stripe": "^15.4.0"  // Latest as of Oct 2025; npm install stripe
+    "stripe": "^19.1.0"
   },
   "devDependencies": {
-    "wrangler": "^3.78.9"
-  }
-  "dependencies": {
-    "stripe": "^15.4.0"
+    "wrangler": "^4.42.2"
   }
 }
+
