@@ -14,6 +14,8 @@
   <meta name="author" content="Megan Judge" />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#008080" />
+  <!-- Optional: override API base if your worker runs on a different host -->
+  <!-- <meta name="x-api-base" content="https://your-worker.workers.dev"> -->
   <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
   <link rel="canonical" href="https://tourmalinetech.com/checkout" />
   <link rel="stylesheet" href="styles.css" />
@@ -162,11 +164,11 @@
         </div>
 
         <!-- ===================== Right: Summary + promos/consents ===================== -->
-        <aside class="order-summary">
+        <aside class="order-summary sidebar-stack">\n  <section class="card order-card">
 </div>
 
         <!-- ===================== Right: Summary + promos/consents ===================== -->
-        <aside class="order-summary">
+        <aside class="order-summary sidebar-stack">\n  <section class="card order-card">
           <h2>Your Order</h2>
           <div id="order-items"></div>
 
@@ -197,7 +199,7 @@
           <div id="payment-element"></div>
           <div class="disclaimer"><small>We never store your card details. Payments are processed securely by Stripe.</small></div>
 
-          <!-- Promotions & Preferences -->
+          \n  </section>\n  <section class="card promos-card">
           <h2 style="margin-top:1.25rem;">Promotions & Preferences</h2>
           <div class="form-row sidebar-buttons">
             <div class="form-group" style="flex:1;">
@@ -255,7 +257,7 @@
             <div class="lines"></div>
           </button>
           <div id="payment-result"></div>
-        </aside>
+          </section>\n</aside>
       </section>
     </form>
   </main>
