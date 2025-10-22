@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,17 +8,19 @@
     <meta property="twitter:title" content="Tourmaline Tech | Megan Judge">
     <meta property="og:site_name" content="Tourmaline Tech | Megan Judge">
     <meta property="og:description" content="Megan Judge's Tourmaline Tech Dropshipping Store.">
-    <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
-    <meta property="og:url" content="https://tourmalinetech.com/">
+    <meta property="og:image" content="https://tourmalineteche.com/images/tourmaline-tech-logo.png">
+    <meta property="og:url" content="https://tourmalineteche.com/">
     <meta property="og:locale" content="en_AU">
     <meta property="og:type" content="website">
     <meta name="author" content="Megan Judge">
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#008080">
-    <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
-    <link rel="alternate" href="https://tourmalinetech.com/" hreflang="en">
-    <link rel="canonical" href="https://tourmalinetech.com/">
+    <link rel="icon" type="image/png" href="https://tourmalineteche.com/images/tourmaline-tech-logo.png">
+    <link rel="alternate" href="https://tourmalineteche.com/" hreflang="en">
+    <link rel="canonical" href="https://tourmalineteche.com/">
     <link rel="stylesheet" type="text/css" href="styles.css">
+    <!-- Stripe JS for client-side (optional for elements, but loaded for future-proofing) -->
+    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
     <header class="header">
@@ -30,7 +32,7 @@
                 <ul class="nav-list">
                     <li><a href="#home">Home</a></li>
                     <li><a href="#products">Products</a></li>
-                    <li><a href="#cart">Cart</a></li>
+                    <li><a href="#cart">Cart (<span id="cart-count">0</span>)</a></li>
                     <li><a href="#contact">Contact</a></li>
                 </ul>
             </nav>
@@ -51,28 +53,28 @@
             <div class="container">
                 <h2>Featured Products</h2>
                 <div class="products-grid">
-                    <article class="product-card">
+                    <article class="product-card" data-product='{"id": "teal-charger", "name": "Teal Wireless Charger", "price": 29.99, "image": "https://via.placeholder.com/300x200?text=Teal+Tech+Case"}'>
                         <img src="https://via.placeholder.com/300x200?text=Teal+Tech+Case" alt="Teal Tech Case" loading="lazy">
                         <h3>Teal Wireless Charger</h3>
                         <p>A sleek charger in tourmaline teal—perfect for your devices.</p>
                         <div class="price">$29.99</div>
                         <button class="add-to-cart">Add to Cart</button>
                     </article>
-                    <article class="product-card">
+                    <article class="product-card" data-product='{"id": "pink-headphones", "name": "Pink Noise-Cancelling Headphones", "price": 89.99, "image": "https://via.placeholder.com/300x200?text=Pink+Headphones"}'>
                         <img src="https://via.placeholder.com/300x200?text=Pink+Headphones" alt="Pink Headphones" loading="lazy">
                         <h3>Pink Noise-Cancelling Headphones</h3>
                         <p>Immerse in sound with our vibrant pink tourmaline-inspired headphones.</p>
                         <div class="price">$89.99</div>
                         <button class="add-to-cart">Add to Cart</button>
                     </article>
-                    <article class="product-card">
+                    <article class="product-card" data-product='{"id": "purple-mouse", "name": "Purple Gaming Mouse", "price": 49.99, "image": "https://via.placeholder.com/300x200?text=Purple+Mouse"}'>
                         <img src="https://via.placeholder.com/300x200?text=Purple+Mouse" alt="Purple Mouse" loading="lazy">
                         <h3>Purple Gaming Mouse</h3>
                         <p>Precision and style in a purple hue from rainbow tourmaline.</p>
                         <div class="price">$49.99</div>
                         <button class="add-to-cart">Add to Cart</button>
                     </article>
-                    <article class="product-card">
+                    <article class="product-card" data-product='{"id": "green-stand", "name": "Green Adjustable Phone Stand", "price": 19.99, "image": "https://via.placeholder.com/300x200?text=Green+Stand"}'>
                         <img src="https://via.placeholder.com/300x200?text=Green+Stand" alt="Green Phone Stand" loading="lazy">
                         <h3>Green Adjustable Phone Stand</h3>
                         <p>Keep your phone steady in emerald green tourmaline tones.</p>
@@ -86,7 +88,12 @@
         <section id="cart" class="cart">
             <div class="container">
                 <h2>Your Cart</h2>
-                <p>Shopping cart functionality coming soon—powered by Stripe!</p>
+                <div id="cart-items"></div>
+                <div id="cart-total" style="display: none;">
+                    <strong>Total: $<span id="total-amount">0.00</span></strong>
+                    <button id="checkout-button" class="cta-button">Checkout with Stripe</button>
+                </div>
+                <p id="empty-cart" style="display: none;">Your cart is empty. <a href="#products">Shop now!</a></p>
             </div>
         </section>
 
@@ -116,11 +123,10 @@
     </footer>
 
     <script>
-        // Dark mode toggle
+        // Dark mode toggle (unchanged)
         const themeToggle = document.querySelector('.theme-toggle');
         const html = document.documentElement;
 
-        // Check for saved theme or default to system preference
         const savedTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         html.classList.toggle('dark', savedTheme === 'dark');
         themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
@@ -131,6 +137,102 @@
             localStorage.setItem('theme', currentTheme);
             themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
         });
+
+        // Cart functionality
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        function updateCartUI() {
+            const cartItemsEl = document.getElementById('cart-items');
+            const cartTotalEl = document.getElementById('cart-total');
+            const totalAmountEl = document.getElementById('total-amount');
+            const emptyCartEl = document.getElementById('empty-cart');
+            const cartCountEl = document.getElementById('cart-count');
+
+            cartItemsEl.innerHTML = '';
+            let total = 0;
+
+            if (cart.length === 0) {
+                cartTotalEl.style.display = 'none';
+                emptyCartEl.style.display = 'block';
+                cartCountEl.textContent = '0';
+                return;
+            }
+
+            cart.forEach((item, index) => {
+                const itemEl = document.createElement('div');
+                itemEl.className = 'cart-item';
+                itemEl.innerHTML = `
+                    <img src="${item.image}" alt="${item.name}" style="width: 50px; height: 50px;">
+                    <span>${item.name} (Qty: ${item.quantity}) - $${(item.price * item.quantity).toFixed(2)}</span>
+                    <button onclick="removeFromCart(${index})">Remove</button>
+                `;
+                cartItemsEl.appendChild(itemEl);
+                total += item.price * item.quantity;
+            });
+
+            cartTotalEl.style.display = 'block';
+            emptyCartEl.style.display = 'none';
+            totalAmountEl.textContent = total.toFixed(2);
+            cartCountEl.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+        }
+
+        function addToCart(productData) {
+            const existingItem = cart.find(item => item.id === productData.id);
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ ...productData, quantity: 1 });
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+            alert(`${productData.name} added to cart!`);
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartUI();
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add event listeners to buttons
+            document.querySelectorAll('.add-to-cart').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const productCard = btn.closest('.product-card');
+                    const productData = JSON.parse(productCard.dataset.product);
+                    addToCart(productData);
+                });
+            });
+
+            // Checkout button
+            const checkoutBtn = document.getElementById('checkout-button');
+            checkoutBtn.addEventListener('click', async () => {
+                if (cart.length === 0) return;
+
+                try {
+                    const response = await fetch('/create-checkout-session', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ items: cart }),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to create checkout session');
+                    }
+
+                    const { sessionId } = await response.json();
+                    const stripe = Stripe('pk_test_your_publishable_key_here'); // Replace with your PK from Stripe dashboard
+                    await stripe.redirectToCheckout({ sessionId });
+                } catch (error) {
+                    alert('Error: ' + error.message);
+                }
+            });
+
+            updateCartUI();
+        });
+
+        // Expose removeFromCart for inline onclick
+        window.removeFromCart = removeFromCart;
     </script>
 </body>
 </html>
