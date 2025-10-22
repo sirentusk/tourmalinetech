@@ -839,3 +839,20 @@ select:focus {
 @media (max-width: 768px) {
   .choice { padding:.6rem .75rem; }
 }
+\n\n
+/* === Sidebar split: Order vs Promotions === */
+.sidebar-stack { display: grid; gap: 1rem; }
+.sidebar-stack .card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem;
+}
+.sidebar-stack .order-card { order: 1; }
+.sidebar-stack .promos-card { order: 2; }
+
+@media (max-width: 768px) {
+  /* On mobile, push Promotions below everything */
+  .sidebar-stack .order-card { order: 1; }
+  .sidebar-stack .promos-card { order: 3; }
+}
