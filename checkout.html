@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourmaline Tech</title>
+    <meta property="og:title" content="Tourmaline Tech">
+    <meta property="twitter:title" content="Tourmaline Tech">
+    <meta property="og:site_name" content="Tourmaline Tech">
+    <meta property="og:description" content="Elevate your tech game with Tourmaline Tech Store: sleek gadgets, cutting-edge electronics, and must-have accessories that redefine innovation. Shop now!">
+    <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
+    <meta property="og:url" content="https://tourmalinetech.com/">
+    <meta property="og:locale" content="en_AU">
+    <meta property="og:type" content="website">
+    <meta name="author" content="Megan Judge">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#008080">
+    <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
+    <link rel="alternate" href="https://tourmalinetech.com/" hreflang="en">
+    <link rel="canonical" href="https://tourmalinetech.com/">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <script src="https://js.stripe.com/v3/"></script>
+</head>
+<body>
+    <header class="header"> <!-- Reuse from index.html for consistency -->
+        <div class="container">
+            <div class="logo">
+                <img src="tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img">
+            </div>
+            <a href="/">← Back to Shop</a>
+        </div>
+    </header>
+
+    <main class="checkout-container">
+        <h1>Secure Checkout</h1>
+        <div id="cart-summary" class="cart-summary"></div>
+        <form id="payment-form">
+            <div id="payment-element">
+                <!-- Stripe Elements will mount here -->
+            </div>
+            <button id="submit" type="submit" disabled>Pay Now</button>
+            <div id="payment-result"></div>
+        </form>
+    </main>
+    <script src="https://js.stripe.com/v3/"></script>
+</body>
+</html>
