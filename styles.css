@@ -42,7 +42,7 @@ html.dark {
   background: radial-gradient(circle at 20% 20%, #10131a, #0c0e12 80%);
   color: var(--text-primary);
 
-  /* Animation-specific overrides (merged here—no conflict!) */
+  /* Animation-specific overrides */
   --primary: #3ccfcf;              /* Your teal for truck accents */
   --primary-light: #66d9e8;        /* Lighter teal variant */
   --dark: #181b22;                 /* Matches your --bg-secondary for button bg */
@@ -712,6 +712,19 @@ select:focus {
   font-size: 1.1rem;
   border-top: 1px solid var(--border);
   padding-top: 1rem;
+}
+
+.disclaimer {
+  margin: 12px 0 20px 0;
+  text-align: center;
+  font-size: 0.875rem; /* small */
+  font-style: italic;
+  color: var(--text-secondary); /* Or #6b7280 for muted gray */
+  line-height: 1.4;
+}
+
+.dark .disclaimer {
+  color: var(--text-secondary); /* Ensures dark mode contrast */
 }
 
 /* =======================================================
