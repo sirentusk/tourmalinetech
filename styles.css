@@ -19,12 +19,14 @@
     --bg-secondary: #1e1e1e;
     --text-primary: #ffffff;
     --text-secondary: #adb5bd;
-    --accent-teal: #40e0d0; /* Lighter teal for dark */
-    --accent-pink: #ff1493; /* Hot pink for contrast */
-    --accent-purple: #ba55d3; /* Medium orchid */
-    --accent-green: #32cd32; /* Lime green */
+    --accent-teal: #40e0d0;
+    --accent-pink: #ff1493;
+    --accent-purple: #ba55d3;
+    --accent-green: #32cd32;
     --border: #333333;
     --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
 }
 
 /* Base Styles */
