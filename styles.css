@@ -1,40 +1,46 @@
 /* =======================================================
-   Tourmaline Tech – Refined Modern UI
-   Balanced Teal–Blue Palette for Rainbow Tourmaline Aesthetics
+   Tourmaline Tech – Rainbow Revival (Modernized)
+   Elegant, gem-toned theme with subtle luminance depth
    ======================================================= */
 
 /* Light Mode Defaults */
 :root {
   --bg-primary: #ffffff;
-  --bg-secondary: #f7f9fb;
+  --bg-secondary: #f8f9fa;
   --text-primary: #1a1a1a;
   --text-secondary: #6c757d;
-  --accent-teal: #009999;
-  --accent-purple: #6c63ff;
-  --accent-green: #7ed957;
-  --border: #e5e8eb;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  /* Rainbow Tourmaline Palette */
+  --accent-teal: #008080;     /* teal tourmaline */
+  --accent-pink: #ff69b4;     /* pink tourmaline */
+  --accent-purple: #9370db;   /* purple tourmaline */
+  --accent-green: #90ee90;    /* green tourmaline */
+
+  --border: #e9ecef;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 /* =======================================================
-   Modernized Dark Mode
+   Dark Mode – Gemstone Gradient Refinement
    ======================================================= */
 html.dark {
-  --bg-primary: #0f1115;
-  --bg-secondary: #181b22;
-  --text-primary: #e5e7eb;
-  --text-secondary: #9ca3af;
-  --accent-teal: #3ccfcf;
-  --accent-purple: #7f7aff;
-  --accent-green: #50fa7b;
+  --bg-primary: #121214;
+  --bg-secondary: #1a1c20;
+  --text-primary: #f4f4f5;
+  --text-secondary: #b0b3b8;
+  --accent-teal: #40e0d0;
+  --accent-pink: #ff1493;
+  --accent-purple: #ba55d3;
+  --accent-green: #32cd32;
   --border: rgba(255, 255, 255, 0.08);
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-  background: radial-gradient(circle at 20% 20%, #10131a, #0c0e12 80%);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+
+  background: radial-gradient(circle at 20% 20%, #181820, #0e0f12 90%);
   color: var(--text-primary);
 }
 
 /* =======================================================
-   Base
+   Base Layout
    ======================================================= */
 * {
   margin: 0;
@@ -46,8 +52,8 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.7;
   color: var(--text-primary);
-  background-color: var(--bg-primary);
-  transition: all 0.3s ease;
+  background: var(--bg-primary);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -71,7 +77,7 @@ a:hover {
 }
 
 /* =======================================================
-   Header & Nav
+   Header
    ======================================================= */
 .header {
   background: rgba(255, 255, 255, 0.75);
@@ -83,7 +89,7 @@ a:hover {
   padding: 1rem 0;
 }
 html.dark .header {
-  background: rgba(18, 20, 25, 0.85);
+  background: rgba(18, 18, 20, 0.85);
 }
 .header .container {
   display: flex;
@@ -92,6 +98,7 @@ html.dark .header {
 }
 .logo-img {
   height: 42px;
+  width: auto;
 }
 .nav-list {
   display: flex;
@@ -110,7 +117,7 @@ html.dark .header {
   left: 0;
   width: 0%;
   height: 2px;
-  background: var(--accent-teal);
+  background: var(--accent-pink);
   transition: width 0.3s ease;
 }
 .nav-list a:hover::after {
@@ -135,7 +142,7 @@ html.dark .header {
 .hero {
   text-align: center;
   padding: 5rem 1rem;
-  background: linear-gradient(125deg, var(--accent-teal), var(--accent-purple));
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
   color: #fff;
   border-radius: 0 0 2rem 2rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -197,38 +204,7 @@ select:focus {
 }
 
 /* =======================================================
-   Products
-   ======================================================= */
-.products {
-  padding: 3rem 0;
-}
-.products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 2rem;
-}
-.product-card {
-  background: var(--bg-secondary);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  transition: transform 0.3s ease;
-}
-.product-card:hover {
-  transform: translateY(-5px);
-}
-.product-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-}
-.price {
-  color: var(--accent-green);
-  font-weight: 700;
-  padding: 0.5rem 1rem;
-}
-
-/* =======================================================
-   Cart & Checkout
+   Checkout Layout
    ======================================================= */
 .checkout-grid {
   display: grid;
@@ -272,6 +248,14 @@ select:focus {
 .order-item-details {
   flex: 1;
 }
+.order-item-details h4 {
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+.order-item-details p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
 
 /* =======================================================
    Footer
@@ -308,5 +292,9 @@ select:focus {
   .checkout-form-area,
   .order-summary {
     padding: 1.5rem;
+  }
+  .order-item img {
+    width: 50px;
+    height: 50px;
   }
 }
