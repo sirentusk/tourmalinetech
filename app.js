@@ -149,13 +149,108 @@ function populateOrderSummary() {
 }
 
 /* =====================================
+   💳 Pricing model (shipping, coupon, tax)
+   ===================================== */
+const FREE_SHIP_THRESHOLD = 15000; // $150.00
+const SHIPPING_RATES = { standard: 995, express: 1995, pickup: 0 };
+const COUPONS = {
+  "WELCOME10": { type: "percent", value: 10 },
+  "SAVE20": { type: "amount", value: 2000 }, // $20 off
+  "FREESHIP": { type: "shipping", value: 1 }
+};
+
+function dollars(cents) { return `$${(cents / 100).toFixed(2)}`; }
+function toCents(v) { return Math.round(Number(v) * 100); }
+
+function currentSelections() {
+  const method = document.querySelector('input[name="shipping-method"]:checked')?.value || "standard";
+  const country = document.getElementById("country")?.value || "AU";
+  const code = (document.getElementById("coupon-code")?.value || "").trim().toUpperCase();
+  return { method, country, code };
+}
+
+function computeTotals(cartItems, selections) {
+  const subtotalCents = cartItems.reduce((sum, i) => sum + Math.round(i.price * 100) * i.quantity, 0);
+
+  const coupon = COUPONS[selections.code];
+  let discountCents = 0;
+  if (coupon) {
+    if (coupon.type === "percent") discountCents = Math.floor(subtotalCents * coupon.value / 100);
+    if (coupon.type === "amount") discountCents = Math.min(coupon.value, subtotalCents);
+  }
+
+  let shippingCents = SHIPPING_RATES[selections.method] ?? SHIPPING_RATES.standard;
+  const freeByThreshold = subtotalCents >= FREE_SHIP_THRESHOLD;
+  const freeByCoupon = coupon && coupon.type === "shipping";
+  if (freeByThreshold || freeByCoupon || selections.method === "pickup") shippingCents = 0;
+
+  const preTaxCents = Math.max(0, subtotalCents - discountCents + shippingCents);
+  const taxRate = selections.country === "AU" ? 0.10 : 0.00; // Simple example: GST only in AU
+  const taxCents = Math.round(preTaxCents * taxRate);
+  const totalCents = preTaxCents + taxCents;
+
+  return {
+    subtotalCents, discountCents, shippingCents, taxCents, totalCents,
+    freeByThreshold, freeByCoupon
+  };
+}
+
+function updatePricingUI() {
+  const { method, country, code } = currentSelections();
+  const totals = computeTotals(cart, { method, country, code });
+
+  const sub = document.getElementById("subtotal-amount");
+  const discRow = document.getElementById("discount-row");
+  const discAmt = document.getElementById("discount-amount");
+  const shipAmt = document.getElementById("shipping-amount");
+  const taxAmt = document.getElementById("tax-amount");
+  const totalAmt = document.getElementById("order-total-amount");
+
+  if (sub) sub.textContent = dollars(totals.subtotalCents);
+  if (discRow && discAmt) {
+    if (totals.discountCents > 0) {
+      discRow.style.display = "flex";
+      discAmt.textContent = `-${dollars(totals.discountCents)}`;
+    } else {
+      discRow.style.display = "none";
+      discAmt.textContent = "-$0.00";
+    }
+  }
+  if (shipAmt) shipAmt.textContent = dollars(totals.shippingCents);
+  if (taxAmt) taxAmt.textContent = dollars(totals.taxCents);
+  if (totalAmt) totalAmt.textContent = dollars(totals.totalCents);
+
+  updateCheckoutButton(totals.totalCents / 100);
+
+  // Keep a visible hint for free shipping
+  const msg = document.getElementById("coupon-message");
+  if (msg) {
+    if (totals.freeByThreshold && totals.subtotalCents > 0) {
+      msg.style.display = "block";
+      msg.textContent = "🎉 Free shipping applied (order over $150).";
+    } else if (COUPONS[code]?.type === "shipping") {
+      msg.style.display = "block";
+      msg.textContent = "🚚 Free shipping coupon applied.";
+    } else if (code && !COUPONS[code]) {
+      msg.style.display = "block";
+      msg.textContent = "Coupon not recognized.";
+    } else {
+      msg.style.display = "none";
+      msg.textContent = "";
+    }
+  }
+
+  return totals;
+}
+
+/* =====================================
    💳 Update Checkout Button Text
    ===================================== */
 function updateCheckoutButton(total) {
   const submitBtn = document.getElementById("submit");
   if (submitBtn) {
     const defaultSpan = submitBtn.querySelector(".default");
-    if (defaultSpan) defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
+    if (defaultSpan) defaultSpan.textContent = `Pay $${Number(total).toFixed(2)}`;
     submitBtn.disabled = total === 0;
   }
 }
@@ -182,6 +277,7 @@ function removeFromCart(index) {
   updateCartUI();
   updateSummary();
   populateOrderSummary();
+  updatePricingUI();
 }
 
 /* =====================================
@@ -223,8 +319,57 @@ async function postJSON(url, payload) {
   return data || {};
 }
 
+function getShippingFromForm() {
+  const name = document.getElementById("name")?.value.trim();
+  const phone = document.getElementById("phone")?.value.trim();
+  const address = document.getElementById("address")?.value.trim();
+  const address2 = document.getElementById("address2")?.value.trim();
+  const city = document.getElementById("city")?.value.trim();
+  const state = document.getElementById("state")?.value.trim();
+  const zip = document.getElementById("zip")?.value.trim();
+  const country = document.getElementById("country")?.value || "AU";
+
+  return {
+    name,
+    phone: phone || undefined,
+    address: {
+      line1: address,
+      line2: address2 || undefined,
+      city,
+      state: state || undefined,
+      postal_code: zip,
+      country
+    }
+  };
+}
+
+function getBillingFromForm() {
+  const same = document.getElementById("billing-same")?.checked;
+  if (same) return null;
+
+  const name = document.getElementById("billing-name")?.value.trim();
+  const address = document.getElementById("billing-address")?.value.trim();
+  const address2 = document.getElementById("billing-address2")?.value.trim();
+  const city = document.getElementById("billing-city")?.value.trim();
+  const state = document.getElementById("billing-state")?.value.trim();
+  const zip = document.getElementById("billing-zip")?.value.trim();
+  const country = document.getElementById("billing-country")?.value || "AU";
+
+  return {
+    name,
+    address: {
+      line1: address,
+      line2: address2 || undefined,
+      city,
+      state: state || undefined,
+      postal_code: zip,
+      country
+    }
+  };
+}
+
 /* =====================================
-   💳 Stripe Checkout Logic (Fixed & Hardened)
+   💳 Stripe Checkout Logic (with dynamic totals & PI refresh)
    ===================================== */
 document.addEventListener("DOMContentLoaded", () => {
   // Cart page handling (index/products)
@@ -253,94 +398,156 @@ document.addEventListener("DOMContentLoaded", () => {
   const paymentForm = document.getElementById("payment-form");
   if (paymentForm) {
     populateOrderSummary();
+    updatePricingUI();
 
-    const orderButton = document.getElementById("submit") || document.querySelector(".order");
+    const orderButton = document.getElementById("submit");
     const defaultSpan = orderButton ? orderButton.querySelector(".default") : null;
-    if (orderButton) orderButton.disabled = true; // until PI + Elements ready
+    if (orderButton) orderButton.disabled = true; // lock until Elements is ready
 
-    // API base detection: optional <meta name="x-api-base" content="https://your-worker.workers.dev">
+    // API base detection
     const API_BASE = (readMeta("x-api-base") || window.API_BASE || location.origin).replace(/\/$/, "");
     const CREATE_PI_URL = `${API_BASE}/create-payment-intent`;
 
-    let stripe, elements, paymentElement, clientSecret;
+    let stripe, elements, paymentElement, clientSecret, intendedAmountCents = 0;
 
-    (async function initPayment() {
-      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      if (total === 0 || cart.length === 0) {
-        showToast("Cart is empty!");
+    async function initOrRefreshElements(desiredAmountCents) {
+      if (!desiredAmountCents || desiredAmountCents < 1) {
+        const result = document.getElementById("payment-result");
+        if (result) {
+          result.innerHTML = `<div class="error">Invalid amount. Please check your cart.</div>`;
+          result.style.display = "block";
+        }
         return;
       }
 
       try {
-        // 1) Create PaymentIntent BEFORE mounting the Element
-        const payload = {
-          amount: Math.round(total * 100),
-          currency: "usd",
-          items: cart
-        };
+        orderButton.disabled = true;
+        if (defaultSpan) defaultSpan.textContent = "Preparing payment...";
 
-        const data = await postJSON(CREATE_PI_URL, payload);
-        if (!data.client_secret) {
-          throw new Error("Backend did not return a client_secret");
-        }
+        const email = document.getElementById("email")?.value.trim();
+        const shipping = getShippingFromForm();
+
+        const data = await postJSON(CREATE_PI_URL, {
+          amount: desiredAmountCents,
+          currency: "usd",
+          items: cart,
+          email,
+          shipping
+        });
+
+        if (!data.client_secret) throw new Error("Backend did not return a client_secret");
 
         clientSecret = data.client_secret;
+        intendedAmountCents = desiredAmountCents;
 
-        // 2) Init Stripe Elements with client_secret & mount
-        stripe = Stripe("pk_test_51SI3lUL5cvn5OYEUTTN9A5uq6pAavoGeZXIjCn7PgmNWfDQoI5ubRSW2r7O3TqrZ4w7k0De7GR4R7Rjj0ZOxWxG700roWU4c6x");
+        // Recreate Stripe Elements each time we change clientSecret
+        if (!stripe) stripe = Stripe("pk_test_51SI3lUL5cvn5OYEUTTN9A5uq6pAavoGeZXIjCn7PgmNWfDQoI5ubRSW2r7O3TqrZ4w7k0De7GR4R7Rjj0ZOxWxG700roWU4c6x");
+        if (paymentElement) paymentElement.unmount();
         elements = stripe.elements({ clientSecret });
         paymentElement = elements.create("payment", { layout: "tabs" });
         paymentElement.mount("#payment-element");
 
-        if (orderButton) {
-          orderButton.disabled = false;
-          if (defaultSpan) defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
-        }
+        orderButton.disabled = false;
+        if (defaultSpan) defaultSpan.textContent = `Pay $${(desiredAmountCents / 100).toFixed(2)}`;
       } catch (err) {
-        console.error("initPayment error:", err);
+        console.error("init/refresh error:", err);
+        const result = document.getElementById("payment-result");
         const msg =
           err.status === 405
             ? `Received 405 from ${CREATE_PI_URL}. This usually means your Cloudflare Pages site is not running the _worker.js (Functions disabled or not deployed).`
             : err.message;
-        const result = document.getElementById("payment-result");
         if (result) {
           result.innerHTML = `<div class="error">Error initialising payment: ${msg}</div>`;
           result.style.display = "block";
         }
       }
+    }
+
+    // Initialize first PI
+    (async function initPayment() {
+      const { method, country, code } = currentSelections();
+      const totals = computeTotals(cart, { method, country, code });
+      await initOrRefreshElements(totals.totalCents);
     })();
+
+    // Recalculate / refresh PI when inputs change
+    ["country"].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.addEventListener("change", async () => {
+        const totals = updatePricingUI();
+        if (totals.totalCents !== intendedAmountCents) await initOrRefreshElements(totals.totalCents);
+      });
+    });
+
+    document.getElementById("billing-same")?.addEventListener("change", (e) => {
+      document.getElementById("billing-fields").style.display = e.target.checked ? "none" : "block";
+    });
+
+    document.getElementById("is-gift")?.addEventListener("change", (e) => {
+      document.getElementById("gift-message-row").style.display = e.target.checked ? "block" : "none";
+    });
+
+    // Shipping method radios
+    document.getElementById("shipping-methods")?.addEventListener("change", async () => {
+      const totals = updatePricingUI();
+      if (totals.totalCents !== intendedAmountCents) await initOrRefreshElements(totals.totalCents);
+    });
+
+    // Coupon apply/remove
+    document.getElementById("apply-coupon")?.addEventListener("click", async () => {
+      const totals = updatePricingUI();
+      if (totals.totalCents !== intendedAmountCents) await initOrRefreshElements(totals.totalCents);
+    });
+    document.getElementById("remove-coupon")?.addEventListener("click", async () => {
+      const codeEl = document.getElementById("coupon-code");
+      if (codeEl) codeEl.value = "";
+      const totals = updatePricingUI();
+      if (totals.totalCents !== intendedAmountCents) await initOrRefreshElements(totals.totalCents);
+    });
 
     if (orderButton) {
       orderButton.addEventListener("click", async (e) => {
         e.preventDefault();
 
-        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        if (total === 0 || cart.length === 0) {
-          showToast("Cart is empty!");
-          return;
-        }
-
-        // Validate form inputs
-        const name = document.getElementById("name")?.value.trim();
+        // Basic validation
         const email = document.getElementById("email")?.value.trim();
+        const name = document.getElementById("name")?.value.trim();
         const address = document.getElementById("address")?.value.trim();
         const city = document.getElementById("city")?.value.trim();
         const zip = document.getElementById("zip")?.value.trim();
-        if (!name || !email || !address || !city || !zip) {
-          showToast("Please fill all fields.");
+        const accepted = document.getElementById("accept-terms")?.checked;
+        if (!email || !name || !address || !city || !zip) {
+          showToast("Please fill all required fields.");
           return;
+        }
+        if (!accepted) {
+          showToast("Please accept the Terms and Privacy Policy.");
+          return;
+        }
+
+        // Confirm amount still matches current selection; if not, refresh PI.
+        const { method, country, code } = currentSelections();
+        const totals = computeTotals(cart, { method, country, code });
+        if (totals.totalCents !== intendedAmountCents) {
+          await initOrRefreshElements(totals.totalCents);
         }
 
         orderButton.disabled = true;
         if (defaultSpan) defaultSpan.textContent = "Complete Order";
 
         try {
+          const shipping = getShippingFromForm();
+          const billing = getBillingFromForm();
+          const receipt_email = email;
+
           const { error } = await stripe.confirmPayment({
             elements,
             clientSecret,
             confirmParams: {
               return_url: window.location.href,
-              receipt_email: email
+              receipt_email,
+              shipping,
+              payment_method_data: billing ? { billing_details: billing } : undefined,
             },
             redirect: "if_required",
           });
@@ -358,7 +565,10 @@ document.addEventListener("DOMContentLoaded", () => {
           showToast("✅ Payment successful!");
           triggerOrderAnimation(orderButton);
         } catch (error) {
-          if (defaultSpan) defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
+          if (defaultSpan) {
+            const totals = computeTotals(cart, currentSelections());
+            defaultSpan.textContent = `Pay $${(totals.totalCents / 100).toFixed(2)}`;
+          }
           orderButton.disabled = false;
           const result = document.getElementById("payment-result");
           if (result) {
@@ -379,3 +589,4 @@ window.updateCartUI = updateCartUI;
 window.updateSummary = updateSummary;
 window.populateOrderSummary = populateOrderSummary;
 window.triggerOrderAnimation = triggerOrderAnimation;
+window.updatePricingUI = updatePricingUI;
