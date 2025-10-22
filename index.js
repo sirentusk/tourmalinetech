@@ -1,4 +1,5 @@
 // app.js: Combined dark mode, cart, and page-specific logic for Tourmaline Tech
+console.log('app.js loaded');
 
 // Dark mode (shared, with toggle if button exists)
 const html = document.documentElement;
@@ -9,10 +10,11 @@ const themeToggle = document.querySelector('.theme-toggle');
 if (themeToggle) {
     themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
     themeToggle.addEventListener('click', () => {
-        const currentTheme = html.classList.contains('dark') ? 'light' : 'dark';
         html.classList.toggle('dark');
-        localStorage.setItem('theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        const isDark = html.classList.contains('dark');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        themeToggle.textContent = isDark ? '☀️' : '🌙';
+        console.log('Theme toggled to:', isDark ? 'dark' : 'light');
     });
 }
 
