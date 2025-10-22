@@ -14,12 +14,10 @@
   <meta name="author" content="Megan Judge" />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#008080" />
-  <!-- Optional: override API base if your worker runs on a different host -->
-  <!-- <meta name="x-api-base" content="https://your-worker.workers.dev"> -->
   <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
   <link rel="canonical" href="https://tourmalinetech.com/checkout" />
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://js.stripe.com/v3/"></script> <!-- Stripe SDK -->
+  <script src="https://js.stripe.com/v3/"></script>
 </head>
 
 <body>
@@ -37,14 +35,15 @@
     </div>
   </header>
 
-  <main>
-    <section class="checkout-grid container">
-      <!-- ===================== Left: Form ===================== -->
-      <div class="checkout-form-area">
-        <h1>Checkout</h1>
+  <main class="container">
+    <!-- Wrap the whole checkout in a single form so sidebar inputs submit too -->
+    <form id="payment-form" novalidate>
+      <section class="checkout-grid">
+        <!-- ===================== Left: Customer + Payment ===================== -->
+        <div class="checkout-form-area">
+          <h1>Checkout</h1>
 
-        <form id="payment-form" novalidate>
-          <!-- 1) Contact -->
+          <!-- Contact -->
           <h2>Contact</h2>
           <div class="form-group">
             <label for="email">Email</label>
@@ -55,7 +54,7 @@
             <input type="tel" id="phone" name="phone" autocomplete="tel" />
           </div>
 
-          <!-- 2) Shipping Address -->
+          <!-- Shipping Address -->
           <h2>Shipping Address</h2>
           <div class="form-group">
             <label for="name">Full Name</label>
@@ -86,7 +85,7 @@
             </div>
             <div class="form-group half">
               <label for="country">Country</label>
-              <select id="country" name="country" autocomplete="country-name" required>
+              <select id="country" name="country" autocomplete="country" required>
                 <option value="AU" selected>Australia</option>
                 <option value="NZ">New Zealand</option>
                 <option value="US">United States</option>
@@ -96,19 +95,30 @@
             </div>
           </div>
 
-          <!-- 3) Shipping Method -->
+          <!-- Delivery method: inputs right-aligned next to text -->
           <h2>Delivery Method</h2>
-          <div class="form-group" id="shipping-methods">
-            <label><input type="radio" name="shipping-method" value="standard" checked> Standard (3–5 business days)</label><br>
-            <label><input type="radio" name="shipping-method" value="express"> Express (1–2 business days)</label><br>
-            <label><input type="radio" name="shipping-method" value="pickup"> Store Pickup (Free)</label>
+          <div class="choice-group" id="shipping-methods">
+            <label class="choice">
+              <span>Standard (3–5 business days)</span>
+              <input type="radio" name="shipping-method" value="standard" checked>
+            </label>
+            <label class="choice">
+              <span>Express (1–2 business days)</span>
+              <input type="radio" name="shipping-method" value="express">
+            </label>
+            <label class="choice">
+              <span>Store Pickup (Free)</span>
+              <input type="radio" name="shipping-method" value="pickup">
+            </label>
           </div>
 
-          <!-- 4) Billing Address -->
+          <!-- Billing toggle -->
           <h2>Billing</h2>
-          <div class="form-group">
-            <label><input type="checkbox" id="billing-same" checked> Billing address same as shipping</label>
-          </div>
+          <label class="choice">
+            <span>Billing address same as shipping</span>
+            <input type="checkbox" id="billing-same" checked>
+          </label>
+
           <div id="billing-fields" style="display:none;">
             <div class="form-group">
               <label for="billing-name">Billing Full Name</label>
@@ -139,7 +149,7 @@
               </div>
               <div class="form-group half">
                 <label for="billing-country">Billing Country</label>
-                <select id="billing-country" autocomplete="country-name">
+                <select id="billing-country" autocomplete="country">
                   <option value="AU" selected>Australia</option>
                   <option value="NZ">New Zealand</option>
                   <option value="US">United States</option>
@@ -149,47 +159,81 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- 5) Promotions & Preferences -->
-          <h2>Promotions & Preferences</h2>
-          <div class="form-row">
-            <div class="form-group half">
+        <!-- ===================== Right: Summary + promos/consents ===================== -->
+        <aside class="order-summary">
+</div>
+
+        <!-- ===================== Right: Summary + promos/consents ===================== -->
+        <aside class="order-summary">
+          <h2>Your Order</h2>
+          <div id="order-items"></div>
+
+          <div class="order-row">
+            <span>Subtotal</span>
+            <span id="subtotal-amount">$0.00</span>
+          </div>
+          <div class="order-row" id="discount-row" style="display:none;">
+            <span>Discount</span>
+            <span id="discount-amount">-$0.00</span>
+          </div>
+          <div class="order-row">
+            <span>Shipping</span>
+            <span id="shipping-amount">$0.00</span>
+          </div>
+          <div class="order-row">
+            <span>Tax</span>
+            <span id="tax-amount">$0.00</span>
+          </div>
+
+          <div class="order-total">
+            <span>Total:</span>
+            <strong id="order-total-amount">$0.00</strong>
+          </div>
+
+          <!-- Payment in Sidebar -->
+          <h2 style="margin-top:1.25rem;">Payment</h2>
+          <div id="payment-element"></div>
+          <div class="disclaimer"><small>We never store your card details. Payments are processed securely by Stripe.</small></div>
+
+          <!-- Promotions & Preferences -->
+          <h2 style="margin-top:1.25rem;">Promotions & Preferences</h2>
+          <div class="form-row sidebar-buttons">
+            <div class="form-group" style="flex:1;">
               <label for="coupon-code">Coupon code</label>
               <input type="text" id="coupon-code" placeholder="e.g., WELCOME10" />
             </div>
-            <div class="form-group half" style="display:flex;align-items:flex-end;">
+            <div class="form-group buttons" style="display:flex;gap:.5rem;align-items:flex-end;">
               <button type="button" id="apply-coupon">Apply</button>
-              <button type="button" id="remove-coupon" style="margin-left:8px;opacity:.7;">Remove</button>
+              <button type="button" id="remove-coupon" class="secondary">Remove</button>
             </div>
           </div>
           <div id="coupon-message" class="disclaimer" style="display:none;"></div>
 
-          <div class="form-group">
-            <label><input type="checkbox" id="is-gift"> This order is a gift</label>
-          </div>
+          <label class="choice">
+            <span>This order is a gift</span>
+            <input type="checkbox" id="is-gift">
+          </label>
           <div class="form-group" id="gift-message-row" style="display:none;">
             <label for="gift-message">Gift message</label>
             <textarea id="gift-message" rows="3" maxlength="240" placeholder="Your note will be printed on a gift slip."></textarea>
           </div>
+
           <div class="form-group">
             <label for="order-notes">Order notes (optional)</label>
             <textarea id="order-notes" rows="3" placeholder="Delivery instructions, drop-off notes, etc."></textarea>
           </div>
-          <div class="form-group">
-            <label><input type="checkbox" id="email-optin"> Email me updates and offers</label>
-          </div>
 
-          <!-- 6) Payment -->
-          <h2>Payment</h2>
-          <div id="payment-element"></div>
+          <label class="choice">
+            <span>Email me updates and offers</span>
+            <input type="checkbox" id="email-optin" checked>
+          </label>
 
-          <div class="disclaimer">
-            <small>We never store your card details. Payments are processed securely by Stripe. By placing your order, you agree to our <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</small>
-          </div>
-
-          <div class="form-group">
-            <label><input type="checkbox" id="accept-terms" required> I agree to the Terms and Privacy Policy</label>
-          </div>
+          <label class="choice">
+            <span>I agree to the Terms and Privacy Policy</span>
+            <input type="checkbox" id="accept-terms" required checked>
+          </label>
 
           <button type="submit" class="order" id="submit">
             <span class="default">Pay $0.00</span>
@@ -211,41 +255,9 @@
             <div class="lines"></div>
           </button>
           <div id="payment-result"></div>
-        </form>
-      </div>
-
-      <!-- ===================== Right: Summary ===================== -->
-      <aside class="order-summary">
-        <h2>Your Order</h2>
-        <div id="order-items"></div>
-
-        <div class="order-row" style="display:flex;justify-content:space-between;margin-top:1rem;">
-          <span>Subtotal</span>
-          <span id="subtotal-amount">$0.00</span>
-        </div>
-        <div class="order-row" id="discount-row" style="display:flex;justify-content:space-between;display:none;">
-          <span>Discount</span>
-          <span id="discount-amount">-$0.00</span>
-        </div>
-        <div class="order-row" style="display:flex;justify-content:space-between;">
-          <span>Shipping</span>
-          <span id="shipping-amount">$0.00</span>
-        </div>
-        <div class="order-row" style="display:flex;justify-content:space-between;">
-          <span>Tax</span>
-          <span id="tax-amount">$0.00</span>
-        </div>
-
-        <div class="order-total">
-          <span>Total:</span>
-          <strong id="order-total-amount">$0.00</strong>
-        </div>
-
-        <p class="disclaimer" style="margin-top:8px;">
-          <small>Shipping calculated by method and destination. GST added for Australia.</small>
-        </p>
-      </aside>
-    </section>
+        </aside>
+      </section>
+    </form>
   </main>
 
   <footer class="footer">
