@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", () => {
     populateOrderSummary(); // This now handles button update too
     // No need for updateSummary() here—it's cart-specific
 
-    const stripe = Stripe("pk_test_your_publishable_key_here");
+    const stripe = Stripe("pk_test_51SI3lUL5cvn5OYEUTTN9A5uq6pAavoGeZXIjCn7PgmNWfDQoI5ubRSW2r7O3TqrZ4w7k0De7GR4R7Rjj0ZOxWxG700roWU4c6x");
     const elements = stripe.elements();
     const paymentElement = elements.create("payment", { layout: "tabs" });
     paymentElement.mount("#payment-element");
@@ -284,6 +284,7 @@ document.addEventListener("DOMContentLoaded", () => {
               currency: "usd",
               items: cart,
               shipping,
+              email: document.getElementById("email").value, // Ensures receipt + ntfy
             }),
           });
 
