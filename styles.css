@@ -783,3 +783,59 @@ select:focus {
     height: 50px;
   }
 }
+
+
+/* === Checkout tweaks (right-align inputs, sidebar grouping) === */
+.choice-group { display: grid; gap: .5rem; margin-bottom: 1rem; }
+.choice {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: .6rem .75rem;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-primary);
+}
+.choice input[type="radio"],
+.choice input[type="checkbox"] {
+  inline-size: 18px; block-size: 18px;
+}
+
+.sidebar-buttons .buttons button.secondary {
+  background: transparent;
+  color: var(--accent-teal);
+  border: 1px solid var(--accent-teal);
+}
+
+.order-row { display:flex; justify-content:space-between; margin:.4rem 0; }
+
+/* Improve focus ring visibility on choice */
+.choice:has(input:focus-visible) {
+  outline: 3px solid rgba(64,224,208,.25);
+  outline-offset: 2px;
+}
+
+/* Mobile: keep radio/checkbox right aligned but stack tightly */
+@media (max-width: 768px) {
+  .choice { padding: .6rem .75rem; }
+  .sidebar-buttons { flex-direction: column; }
+}
+
+
+/* === Fix: ensure radios/checkboxes are right-aligned within a single row === */
+.choice { display:flex; align-items:center; justify-content:space-between; gap:1rem; }
+.choice span { flex: 1 1 auto; }
+.choice input[type="radio"], .choice input[type="checkbox"] {
+  width: auto !important;
+  min-width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+  margin-left: 12px;
+}
+/* Prevent global input 100% width rules from affecting radios/checkboxes */
+.choice input[type="radio"], .choice input[type="checkbox"] { display: inline-block; }
+/* Tighten row spacing for stacked choices on mobile */
+@media (max-width: 768px) {
+  .choice { padding:.6rem .75rem; }
+}
