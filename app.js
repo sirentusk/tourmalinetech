@@ -136,13 +136,14 @@ function populateOrderSummary() {
   if (!orderContainer) return;
 
   orderContainer.innerHTML = "";
+  let total = 0; // Initialize total
   if (cart.length === 0) {
     orderContainer.innerHTML = "<p>Your cart is empty.</p>";
     totalAmountEl.textContent = "$0.00";
-    return;
+    updateCheckoutButton(0); // Update button to $0.00 if empty
+    return total; // Return 0 for empty cart
   }
 
-  let total = 0;
   cart.forEach((item) => {
     total += item.price * item.quantity;
     const el = document.createElement("div");
@@ -161,6 +162,23 @@ function populateOrderSummary() {
   });
 
   totalAmountEl.textContent = `$${total.toFixed(2)}`;
+  updateCheckoutButton(total); // Update button with calculated total
+  return total; // Optional: Return for chaining if needed
+}
+
+// ================================
+// 💳 Update Checkout Button Text
+// ================================
+function updateCheckoutButton(total) {
+  const submitBtn = document.getElementById("submit");
+  if (submitBtn) {
+    const defaultSpan = submitBtn.querySelector('.default');
+    if (defaultSpan) {
+      defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
+    }
+    // Disable if empty
+    submitBtn.disabled = total === 0;
+  }
 }
 
 // ================================
@@ -184,7 +202,7 @@ function removeFromCart(index) {
   localStorage.setItem("cart", JSON.stringify(cart));
   updateCartUI();
   updateSummary();
-  populateOrderSummary();
+  populateOrderSummary(); // This will now also update button
 }
 
 // ================================
@@ -227,8 +245,8 @@ document.addEventListener("DOMContentLoaded", () => {
   // Checkout page handling
   const paymentForm = document.getElementById("payment-form");
   if (paymentForm) {
-    populateOrderSummary();
-    updateSummary();
+    populateOrderSummary(); // This now handles button update too
+    // No need for updateSummary() here—it's cart-specific
 
     const stripe = Stripe("pk_test_your_publishable_key_here");
     const elements = stripe.elements();
