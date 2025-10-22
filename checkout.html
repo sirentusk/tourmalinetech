@@ -1,86 +1,102 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Checkout | Tourmaline Tech</title>
-    <meta property="og:title" content="Checkout | Tourmaline Tech">
-    <meta property="twitter:title" content="Checkout | Tourmaline Tech">
-    <meta property="og:site_name" content="Tourmaline Tech">
-    <meta property="og:description" content="Elevate your tech game with Tourmaline Tech Store: sleek gadgets, cutting-edge electronics, and must-have accessories that redefine innovation. Shop now!">
-    <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
-    <meta property="og:url" content="https://tourmalinetech.com/checkout">
-    <meta property="og:locale" content="en_AU">
-    <meta property="og:type" content="website">
-    <meta name="author" content="Megan Judge">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#008080">
-    <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
-    <link rel="alternate" href="https://tourmalinetech.com/checkout" hreflang="en">
-    <link rel="canonical" href="https://tourmalinetech.com/checkout">
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkout | Tourmaline Tech</title>
+  <meta property="og:title" content="Checkout | Tourmaline Tech" />
+  <meta property="og:site_name" content="Tourmaline Tech" />
+  <meta property="og:description" content="Secure checkout — complete your Tourmaline Tech order with fast shipping and Stripe payments." />
+  <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
+  <meta property="og:url" content="https://tourmalinetech.com/checkout" />
+  <meta property="og:locale" content="en_AU" />
+  <meta property="og:type" content="website" />
+  <meta name="author" content="Megan Judge" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#008080" />
+  <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
+  <link rel="canonical" href="https://tourmalinetech.com/checkout" />
+  <link rel="stylesheet" href="styles.css" />
 </head>
+
 <body>
-    <header class="header">
-        <div class="container">
-            <div class="logo">
-                <img src="images/tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img">
+    
+  <header class="header">
+    <div class="container">
+      <div class="logo">
+        <img src="images/tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img" />
+      </div>
+      <nav class="nav">
+        <ul class="nav-list">
+          <li><a href="/">← Back to Shop</a></li>
+        </ul>
+      </nav>
+      <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+    </div>
+  </header>
+
+  <!-- Main Checkout Area -->
+  <main>
+    <section class="checkout-grid container">
+      <!-- Left Column – Form -->
+      <div class="checkout-form-area">
+        <h1>Checkout</h1>
+
+        <form id="payment-form">
+          <h2>Shipping Information</h2>
+
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" autocomplete="name" required />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" autocomplete="email" required />
+          </div>
+
+          <div class="form-group">
+            <label for="address">Address</label>
+            <input type="text" id="address" name="address" autocomplete="street-address" required />
+          </div>
+
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="city">City</label>
+              <input type="text" id="city" name="city" autocomplete="address-level2" required />
             </div>
-            <nav class="nav">
-                <ul class="nav-list">
-                    <a href="/">← Back to Shop</a>
-                </ul>
-            </nav>
-            <button class="theme-toggle" aria-label="Toggle dark mode">🌙</button>
+            <div class="form-group half">
+              <label for="zip">Postal Code</label>
+              <input type="text" id="zip" name="zip" autocomplete="postal-code" required />
+            </div>
+          </div>
+
+          <h2>Payment</h2>
+          <div id="payment-element"></div>
+
+          <button id="submit">Pay Securely</button>
+          <div id="payment-result"></div>
+        </form>
+      </div>
+
+      <!-- Right Column – Order Summary -->
+      <aside class="order-summary">
+        <h2>Your Order</h2>
+        <div id="order-items"></div>
+        <div class="order-total">
+          <span>Total:</span>
+          <strong id="order-total-amount">$0.00</strong>
         </div>
-    </header>
-    <main>
-        <div class="checkout-container">
-          <h1>Checkout</h1>
-        
-          <form id="payment-form">
-            <div id="cart-summary"></div>
-        
-            <h2>Shipping Information</h2>
-            <div class="form-group">
-              <label for="name">Full Name</label>
-              <input type="text" id="name" name="name" autocomplete="name" required>
-            </div>
-        
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" autocomplete="email" required>
-            </div>
-        
-            <div class="form-group">
-              <label for="address">Address</label>
-              <input type="text" id="address" name="address" autocomplete="street-address" required>
-            </div>
-        
-            <div class="form-row">
-              <div class="form-group half">
-                <label for="city">City</label>
-                <input type="text" id="city" name="city" autocomplete="address-level2" required>
-              </div>
-              <div class="form-group half">
-                <label for="zip">Postal Code</label>
-                <input type="text" id="zip" name="zip" autocomplete="postal-code" required>
-              </div>
-            </div>
-        
-            <h2>Payment</h2>
-            <div id="payment-element"></div>
-            <button id="submit">Pay</button>
-        
-            <div id="payment-result"></div>
-          </form>
-        </div>
-    </main>
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 Tourmaline Tech. All rights reserved. | Powered by Cloudflare & Stripe</p>
-        </div>
-    </footer>
-    <script src="app.js"></script>
+      </aside>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2025 Tourmaline Tech. All rights reserved. | Powered by Cloudflare & Stripe</p>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
 </body>
 </html>
