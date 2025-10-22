@@ -79,6 +79,7 @@ a:hover {
   pointer-events: none;
   transition: opacity 0.4s ease;
 }
+
 .toast.show {
   opacity: 1;
   pointer-events: auto;
@@ -257,6 +258,29 @@ a:hover {
     border: 1px solid var(--border);
     border-radius: 4px;
     background: var(--bg-secondary);
+}
+
+.form-group {
+  margin-bottom: 1rem;
+  text-align: left;
+}
+
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-row .half {
+  flex: 1;
+}
+
+input {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  background: var(--bg-primary);
+  color: var(--text-primary);
 }
 
 /* Contact */
