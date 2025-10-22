@@ -25,7 +25,7 @@ export default {
     try {
       stripe = new Stripe(env.STRIPE_KEY, {
         httpClient: Stripe.createFetchHttpClient(),
-        apiVersion: '2025-01-27', // Supports latest features like enhanced metadata
+        apiVersion: '2025-01-27',
       });
     } catch (error) {
       console.error('Stripe init failed:', error);
@@ -36,63 +36,15 @@ export default {
     }
 
     // ===========================================================
-    // 🟣 1️⃣ Create Checkout Session (Stripe-hosted) – Optional/Unused in Current Flow
-    // ===========================================================
-    if (url.pathname === '/create-checkout-session' && request.method === 'POST') {
-      console.log('Hit /create-checkout-session');
-      try {
-        const { items } = await request.json();
-
-        if (!items || !Array.isArray(items) || items.length === 0) {
-          return new Response(JSON.stringify({ error: 'No items in cart' }), {
-            status: 400,
-            headers: { 'Content-Type': 'application/json', ...corsHeaders },
-          });
-        }
-
-        const lineItems = items.map(item => ({
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: item.name,
-              images: [item.image],
-              metadata: { variantId: item.id },
-            },
-            unit_amount: Math.round(item.price * 100),
-          },
-          quantity: item.quantity,
-        }));
-
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ['card'],
-          line_items: lineItems,
-          mode: 'payment',
-          success_url: `${url.origin}/?success=true`,
-          cancel_url: `${url.origin}/?canceled=true`,
-          metadata: { items: JSON.stringify(items) },
-        });
-
-        return new Response(JSON.stringify({ sessionId: session.id }), {
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
-        });
-      } catch (error) {
-        console.error('Checkout creation error:', error);
-        return new Response(JSON.stringify({ error: 'Failed to create session: ' + error.message }), {
-          status: 500,
-          headers: { 'Content-Type': 'application/json', ...corsHeaders },
-        });
-      }
-    }
-
-    // ===========================================================
     // 🟢 2️⃣ Create Payment Intent (Stripe Elements) – Active Flow
     // ===========================================================
     if (url.pathname === '/create-payment-intent' && request.method === 'POST') {
-      console.log('Hit /create-payment-intent');
+      console.log('Hit /create-payment-intent'); // Debug: Confirms route hit
       try {
-        const { amount, currency, items, shipping, email } = await request.json(); // Added email destructure for metadata
+        const { amount, currency, items, shipping, email } = await request.json();
 
         if (!amount || !items) {
+          console.log('Missing payment data:', { amount, items }); // Debug: Log bad requests
           return new Response(JSON.stringify({ error: 'Missing payment data' }), {
             status: 400,
             headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -105,26 +57,27 @@ export default {
           description: 'Tourmaline Tech Order',
           metadata: {
             items: JSON.stringify(items.map(i => `${i.name} x${i.quantity}`)),
-            email: email || '', // Pass email for receipts/notifications
+            email: email || '',
           },
-          receipt_email: email || undefined, // Auto-send receipt if provided
+          receipt_email: email || undefined,
           shipping: {
             name: shipping?.name || 'Customer',
             address: {
               line1: shipping?.address?.line1 || '',
               city: shipping?.address?.city || '',
               postal_code: shipping?.address?.postal_code || '',
-              country: 'AU', // Hardcoded—update for multi-country if needed
+              country: 'AU',
             },
           },
           automatic_payment_methods: { enabled: true },
         });
 
+        console.log('PaymentIntent created:', paymentIntent.id); // Debug: Success log
         return new Response(JSON.stringify({ client_secret: paymentIntent.client_secret }), {
           headers: { 'Content-Type': 'application/json', ...corsHeaders },
         });
       } catch (error) {
-        console.error('Payment intent error:', error);
+        console.error('Payment intent error:', error); // Debug: Stripe errors
         return new Response(JSON.stringify({ error: error.message }), {
           status: 400,
           headers: { 'Content-Type': 'application/json', ...corsHeaders },
@@ -143,13 +96,13 @@ export default {
         const event = stripe.webhooks.constructEvent(
           payload,
           sig,
-          env.STRIPE_WEBHOOK_SECRET // Ensure this is set in Wrangler secrets
+          env.STRIPE_WEBHOOK_SECRET
         );
 
         if (event.type === 'payment_intent.succeeded') {
           const intent = event.data.object;
           const items = intent.metadata?.items || 'Unknown items';
-          const customerEmail = intent.metadata?.email || intent.receipt_email || 'N/A'; // Fallback to metadata or receipt_email
+          const customerEmail = intent.metadata?.email || intent.receipt_email || 'N/A';
 
           // 📨 Send push to ntfy.sh
           await fetch('https://ntfy.sh/TourmalineTech', {
@@ -180,6 +133,7 @@ export default {
     // ===========================================================
     // 🧱 Fallback: static assets or unknown routes
     // ===========================================================
+    console.log('Fallback to fetch for:', url.pathname, request.method); // Debug: Logs if route missed
     return fetch(request);
   },
 };
