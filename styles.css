@@ -71,6 +71,15 @@ html.dark .order-summary {
   box-sizing: border-box;
 }
 
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+html {
+  box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+}
+
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   line-height: 1.7;
@@ -94,6 +103,7 @@ a {
   text-decoration: none;
   transition: color 0.25s ease, transform 0.2s ease;
 }
+
 a:hover {
   color: var(--accent-teal);
   text-decoration: none;
@@ -122,9 +132,11 @@ a:hover {
   transform-origin: top center;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
+
 html.dark .toast {
   background: rgba(30, 30, 30, 0.85);
 }
+
 .toast.show {
   opacity: 1;
   transform: translateX(-50%) translateY(0);
@@ -134,6 +146,7 @@ html.dark .toast {
 /* =======================================================
    Header & Nav
    ======================================================= */
+
 .header {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(10px);
@@ -145,28 +158,34 @@ html.dark .toast {
   z-index: 100;
   padding: 1rem 0;
 }
+
 html.dark .header {
   background: rgba(20, 22, 28, 0.75);
 }
+
 .header .container {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
 .logo-img {
   height: 42px;
   width: auto;
 }
+
 .nav-list {
   display: flex;
   list-style: none;
   gap: 2rem;
 }
+
 .nav-list a {
   font-weight: 600;
   font-size: 1rem;
   position: relative;
 }
+
 .nav-list a::after {
   content: "";
   position: absolute;
@@ -177,9 +196,11 @@ html.dark .header {
   background: var(--accent-teal);
   transition: width 0.3s ease;
 }
+
 .nav-list a:hover::after {
   width: 100%;
 }
+
 .theme-toggle {
   background: none;
   border: none;
@@ -189,6 +210,7 @@ html.dark .header {
   border-radius: 50%;
   transition: background-color 0.3s ease;
 }
+
 .theme-toggle:hover {
   background: var(--border);
 }
