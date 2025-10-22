@@ -14,6 +14,8 @@
   <meta name="author" content="Megan Judge" />
   <meta name="robots" content="index, follow" />
   <meta name="theme-color" content="#008080" />
+  <!-- Optional: override API base if your worker runs on a different host -->
+  <!-- <meta name="x-api-base" content="https://your-worker.workers.dev"> -->
   <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
   <link rel="canonical" href="https://tourmalinetech.com/checkout" />
   <link rel="stylesheet" href="styles.css" />
@@ -37,44 +39,156 @@
 
   <main>
     <section class="checkout-grid container">
+      <!-- ===================== Left: Form ===================== -->
       <div class="checkout-form-area">
         <h1>Checkout</h1>
 
-        <form id="payment-form">
-          <h2>Shipping Information</h2>
-
-          <div class="form-group">
-            <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" autocomplete="name" required />
-          </div>
-
+        <form id="payment-form" novalidate>
+          <!-- 1) Contact -->
+          <h2>Contact</h2>
           <div class="form-group">
             <label for="email">Email</label>
             <input type="email" id="email" name="email" autocomplete="email" required />
           </div>
-
           <div class="form-group">
-            <label for="address">Address</label>
-            <input type="text" id="address" name="address" autocomplete="street-address" required />
+            <label for="phone">Phone (for delivery updates)</label>
+            <input type="tel" id="phone" name="phone" autocomplete="tel" />
           </div>
 
+          <!-- 2) Shipping Address -->
+          <h2>Shipping Address</h2>
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label for="address">Address line 1</label>
+            <input type="text" id="address" name="address" autocomplete="address-line1" required />
+          </div>
+          <div class="form-group">
+            <label for="address2">Address line 2 (optional)</label>
+            <input type="text" id="address2" name="address2" autocomplete="address-line2" />
+          </div>
           <div class="form-row">
             <div class="form-group half">
               <label for="city">City</label>
               <input type="text" id="city" name="city" autocomplete="address-level2" required />
             </div>
             <div class="form-group half">
+              <label for="state">State / Region</label>
+              <input type="text" id="state" name="state" autocomplete="address-level1" />
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group half">
               <label for="zip">Postal Code</label>
               <input type="text" id="zip" name="zip" autocomplete="postal-code" required />
             </div>
+            <div class="form-group half">
+              <label for="country">Country</label>
+              <select id="country" name="country" autocomplete="country-name" required>
+                <option value="AU" selected>Australia</option>
+                <option value="NZ">New Zealand</option>
+                <option value="US">United States</option>
+                <option value="CA">Canada</option>
+                <option value="GB">United Kingdom</option>
+              </select>
+            </div>
           </div>
 
+          <!-- 3) Shipping Method -->
+          <h2>Delivery Method</h2>
+          <div class="form-group" id="shipping-methods">
+            <label><input type="radio" name="shipping-method" value="standard" checked> Standard (3–5 business days)</label><br>
+            <label><input type="radio" name="shipping-method" value="express"> Express (1–2 business days)</label><br>
+            <label><input type="radio" name="shipping-method" value="pickup"> Store Pickup (Free)</label>
+          </div>
+
+          <!-- 4) Billing Address -->
+          <h2>Billing</h2>
+          <div class="form-group">
+            <label><input type="checkbox" id="billing-same" checked> Billing address same as shipping</label>
+          </div>
+          <div id="billing-fields" style="display:none;">
+            <div class="form-group">
+              <label for="billing-name">Billing Full Name</label>
+              <input type="text" id="billing-name" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="billing-address">Billing Address line 1</label>
+              <input type="text" id="billing-address" autocomplete="address-line1">
+            </div>
+            <div class="form-group">
+              <label for="billing-address2">Billing Address line 2 (optional)</label>
+              <input type="text" id="billing-address2" autocomplete="address-line2">
+            </div>
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="billing-city">Billing City</label>
+                <input type="text" id="billing-city" autocomplete="address-level2">
+              </div>
+              <div class="form-group half">
+                <label for="billing-state">Billing State / Region</label>
+                <input type="text" id="billing-state" autocomplete="address-level1">
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group half">
+                <label for="billing-zip">Billing Postal Code</label>
+                <input type="text" id="billing-zip" autocomplete="postal-code">
+              </div>
+              <div class="form-group half">
+                <label for="billing-country">Billing Country</label>
+                <select id="billing-country" autocomplete="country-name">
+                  <option value="AU" selected>Australia</option>
+                  <option value="NZ">New Zealand</option>
+                  <option value="US">United States</option>
+                  <option value="CA">Canada</option>
+                  <option value="GB">United Kingdom</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5) Promotions & Preferences -->
+          <h2>Promotions & Preferences</h2>
+          <div class="form-row">
+            <div class="form-group half">
+              <label for="coupon-code">Coupon code</label>
+              <input type="text" id="coupon-code" placeholder="e.g., WELCOME10" />
+            </div>
+            <div class="form-group half" style="display:flex;align-items:flex-end;">
+              <button type="button" id="apply-coupon">Apply</button>
+              <button type="button" id="remove-coupon" style="margin-left:8px;opacity:.7;">Remove</button>
+            </div>
+          </div>
+          <div id="coupon-message" class="disclaimer" style="display:none;"></div>
+
+          <div class="form-group">
+            <label><input type="checkbox" id="is-gift"> This order is a gift</label>
+          </div>
+          <div class="form-group" id="gift-message-row" style="display:none;">
+            <label for="gift-message">Gift message</label>
+            <textarea id="gift-message" rows="3" maxlength="240" placeholder="Your note will be printed on a gift slip."></textarea>
+          </div>
+          <div class="form-group">
+            <label for="order-notes">Order notes (optional)</label>
+            <textarea id="order-notes" rows="3" placeholder="Delivery instructions, drop-off notes, etc."></textarea>
+          </div>
+          <div class="form-group">
+            <label><input type="checkbox" id="email-optin"> Email me updates and offers</label>
+          </div>
+
+          <!-- 6) Payment -->
           <h2>Payment</h2>
           <div id="payment-element"></div>
 
-          <!-- Privacy Disclaimer (expanded and styled) -->
           <div class="disclaimer">
-            <small>Disclaimer: Card details are stored through the Stripe platform, not locally by Tourmaline Tech, to protect user privacy. We have no records of your card details.</small>
+            <small>We never store your card details. Payments are processed securely by Stripe. By placing your order, you agree to our <a href="/terms" target="_blank" rel="noopener">Terms</a> and <a href="/privacy" target="_blank" rel="noopener">Privacy Policy</a>.</small>
+          </div>
+
+          <div class="form-group">
+            <label><input type="checkbox" id="accept-terms" required> I agree to the Terms and Privacy Policy</label>
           </div>
 
           <button type="submit" class="order" id="submit">
@@ -100,13 +214,36 @@
         </form>
       </div>
 
+      <!-- ===================== Right: Summary ===================== -->
       <aside class="order-summary">
         <h2>Your Order</h2>
         <div id="order-items"></div>
+
+        <div class="order-row" style="display:flex;justify-content:space-between;margin-top:1rem;">
+          <span>Subtotal</span>
+          <span id="subtotal-amount">$0.00</span>
+        </div>
+        <div class="order-row" id="discount-row" style="display:flex;justify-content:space-between;display:none;">
+          <span>Discount</span>
+          <span id="discount-amount">-$0.00</span>
+        </div>
+        <div class="order-row" style="display:flex;justify-content:space-between;">
+          <span>Shipping</span>
+          <span id="shipping-amount">$0.00</span>
+        </div>
+        <div class="order-row" style="display:flex;justify-content:space-between;">
+          <span>Tax</span>
+          <span id="tax-amount">$0.00</span>
+        </div>
+
         <div class="order-total">
           <span>Total:</span>
           <strong id="order-total-amount">$0.00</strong>
         </div>
+
+        <p class="disclaimer" style="margin-top:8px;">
+          <small>Shipping calculated by method and destination. GST added for Australia.</small>
+        </p>
       </aside>
     </section>
   </main>
