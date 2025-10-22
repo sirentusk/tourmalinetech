@@ -13,7 +13,7 @@ export default {
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Headers': 'Content-Type, stripe-signature',
     };
 
     if (request.method === 'OPTIONS') {
@@ -36,7 +36,7 @@ export default {
     }
 
     // ===========================================================
-    // 🟣 1️⃣ Existing: Create Checkout Session (Stripe-hosted)
+    // 🟣 1️⃣ Create Checkout Session (Stripe-hosted)
     // ===========================================================
     if (url.pathname === '/create-checkout-session' && request.method === 'POST') {
       console.log('Hit /create-checkout-session');
@@ -85,7 +85,7 @@ export default {
     }
 
     // ===========================================================
-    // 🟢 2️⃣ New: Create Payment Intent (for Stripe Elements)
+    // 🟢 2️⃣ Create Payment Intent (Stripe Elements)
     // ===========================================================
     if (url.pathname === '/create-payment-intent' && request.method === 'POST') {
       console.log('Hit /create-payment-intent');
@@ -130,4 +130,53 @@ export default {
       }
     }
 
-    // ================================
+    // ===========================================================
+    // 🔔 3️⃣ Stripe Webhook Handler + ntfy Notification
+    // ===========================================================
+    if (url.pathname === '/stripe/webhook' && request.method === 'POST') {
+      const payload = await request.text();
+      const sig = request.headers.get('stripe-signature');
+
+      try {
+        const event = stripe.webhooks.constructEvent(
+          payload,
+          sig,
+          env.STRIPE_WEBHOOK_SECRET // create this in dashboard → secrets
+        );
+
+        if (event.type === 'payment_intent.succeeded') {
+          const intent = event.data.object;
+          const items = intent.metadata?.items || 'Unknown items';
+
+          // 📨 Send push to ntfy.sh
+          await fetch('https://ntfy.sh/TourmalineTech', {
+            method: 'POST',
+            headers: {
+              'Title': '📦 New TourmalineTech Order',
+              'Priority': 'high'
+            },
+            body: `✅ ${intent.shipping?.name || 'Customer'} paid $${(intent.amount / 100).toFixed(2)}\nItems: ${items}\nEmail: ${intent.receipt_email || 'N/A'}`
+          });
+
+          console.log('📲 ntfy notification sent');
+        }
+
+        return new Response(JSON.stringify({ received: true }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      } catch (err) {
+        console.error('Webhook error:', err);
+        return new Response(JSON.stringify({ error: err.message }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+    }
+
+    // ===========================================================
+    // 🧱 Fallback: static assets or unknown routes
+    // ===========================================================
+    return fetch(request);
+  },
+};
