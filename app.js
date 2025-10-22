@@ -118,7 +118,11 @@ function updateSummary() {
     const submitBtn = document.getElementById("submit");
     if (submitBtn) {
       submitBtn.disabled = false;
-      submitBtn.textContent = `Pay $${total.toFixed(2)}`;
+      // Dynamic text for animated button
+      const defaultSpan = submitBtn.querySelector('.default');
+      if (defaultSpan) {
+        defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
+      }
     }
   }
 }
@@ -184,6 +188,17 @@ function removeFromCart(index) {
 }
 
 // ================================
+// 🚛 Order Animation Trigger (Vanilla JS)
+// ================================
+function triggerOrderAnimation(button) {
+  if (button.classList.contains('animate')) return; // Prevent re-trigger
+  button.classList.add('animate');
+  setTimeout(() => {
+    button.classList.remove('animate');
+  }, 10000); // 10s animation duration
+}
+
+// ================================
 // 💳 Stripe Checkout Logic
 // ================================
 document.addEventListener("DOMContentLoaded", () => {
@@ -210,7 +225,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // Checkout page handling
-  if (document.getElementById("payment-form")) {
+  const paymentForm = document.getElementById("payment-form");
+  if (paymentForm) {
     populateOrderSummary();
     updateSummary();
 
@@ -219,60 +235,77 @@ document.addEventListener("DOMContentLoaded", () => {
     const paymentElement = elements.create("payment", { layout: "tabs" });
     paymentElement.mount("#payment-element");
 
-    const paymentForm = document.getElementById("payment-form");
-    paymentForm.addEventListener("submit", async (e) => {
-      e.preventDefault();
+    // Hook into .order button click (replaces old #submit listener)
+    const orderButton = document.querySelector('.order'); // Your animated button
+    if (orderButton) {
+      orderButton.addEventListener('click', async (e) => {
+        e.preventDefault(); // Prevent immediate form submit
 
-      const submitBtn = document.getElementById("submit");
-      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      submitBtn.disabled = true;
-      submitBtn.textContent = "Processing...";
+        const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        if (total === 0 || cart.length === 0) return;
 
-      const shipping = {
-        name: document.getElementById("name").value,
-        address: {
-          line1: document.getElementById("address").value,
-          city: document.getElementById("city").value,
-          postal_code: document.getElementById("zip").value,
-        },
-      };
+        orderButton.disabled = true;
+        const defaultSpan = orderButton.querySelector('.default');
+        if (defaultSpan) defaultSpan.textContent = 'Complete Order'; // Switch to animation start text
 
-      try {
-        const response = await fetch("/create-payment-intent", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            amount: Math.round(total * 100),
-            currency: "usd",
-            items: cart,
-            shipping,
-          }),
-        });
+        const shipping = {
+          name: document.getElementById("name").value,
+          address: {
+            line1: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            postal_code: document.getElementById("zip").value,
+          },
+        };
 
-        if (!response.ok) throw new Error("Failed to create payment intent");
-        const { client_secret } = await response.json();
+        try {
+          const response = await fetch("/create-payment-intent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              amount: Math.round(total * 100),
+              currency: "usd",
+              items: cart,
+              shipping,
+            }),
+          });
 
-        const { error } = await stripe.confirmPayment({
-          elements,
-          confirmParams: { return_url: window.location.href },
-          redirect: "if_required",
-        });
+          if (!response.ok) throw new Error("Failed to create payment intent");
+          const { client_secret } = await response.json();
 
-        if (error) throw error;
+          const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: { return_url: window.location.href },
+            redirect: "if_required",
+          });
 
-        localStorage.removeItem("cart");
-        document.getElementById("payment-result").innerHTML =
-          '<div class="success">Payment successful! Order confirmed—check your email. <a href="/">Continue Shopping</a></div>';
-        document.getElementById("payment-result").style.display = "block";
-        showToast("✅ Payment successful!");
-      } catch (error) {
-        document.getElementById("payment-result").innerHTML = `<div class="error">Error: ${error.message}</div>`;
-        document.getElementById("payment-result").style.display = "block";
-        submitBtn.disabled = false;
-        submitBtn.textContent = `Pay $${total.toFixed(2)}`;
-        showToast("⚠️ Payment failed. Try again.");
-      }
-    });
+          if (error) throw error;
+
+          // Success: Clear cart, hide form, trigger animation
+          localStorage.removeItem("cart");
+          paymentForm.style.display = 'none'; // Hide form during animation
+          document.getElementById("payment-result").innerHTML =
+            '<div class="success">Order confirmed—check your email. <a href="/">Continue Shopping</a></div>';
+          document.getElementById("payment-result").style.display = "block";
+          showToast("✅ Payment successful!");
+
+          // Trigger truck animation
+          triggerOrderAnimation(orderButton);
+
+          // After animation (10s), optionally show full success or redirect
+          setTimeout(() => {
+            // e.g., window.location.href = '/success'; or update UI
+          }, 10000);
+
+        } catch (error) {
+          // Error: Revert button text, re-enable
+          if (defaultSpan) defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
+          orderButton.disabled = false;
+          document.getElementById("payment-result").innerHTML = `<div class="error">Error: ${error.message}</div>`;
+          document.getElementById("payment-result").style.display = "block";
+          showToast("⚠️ Payment failed. Try again.");
+        }
+      });
+    }
   }
 });
 
@@ -282,3 +315,4 @@ window.removeFromCart = removeFromCart;
 window.updateCartUI = updateCartUI;
 window.updateSummary = updateSummary;
 window.populateOrderSummary = populateOrderSummary;
+window.triggerOrderAnimation = triggerOrderAnimation; // For manual triggers if needed
