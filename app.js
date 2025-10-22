@@ -219,7 +219,7 @@ function triggerOrderAnimation(button) {
 // ================================
 // 💳 Stripe Checkout Logic
 // ================================
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
   // Cart page handling
   const addToCartBtns = document.querySelectorAll(".add-to-cart");
   if (addToCartBtns.length > 0) {
@@ -246,55 +246,22 @@ document.addEventListener("DOMContentLoaded", async () => {
   const paymentForm = document.getElementById("payment-form");
   if (paymentForm) {
     populateOrderSummary(); // This now handles button update too
-    // No need for updateSummary() here—it's cart-specific
 
     const stripe = Stripe("pk_test_51SI3lUL5cvn5OYEUTTN9A5uq6pAavoGeZXIjCn7PgmNWfDQoI5ubRSW2r7O3TqrZ4w7k0De7GR4R7Rjj0ZOxWxG700roWU4c6x");
-
-    // Create PaymentIntent on page load (with dummy shipping; update later if needed)
-    let clientSecret;
-    try {
-      const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-      if (total === 0 || cart.length === 0) {
-        showToast("Cart is empty—add items to checkout!");
-        return;
-      }
-
-      const response = await fetch("/create-payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: Math.round(total * 100),
-          currency: "usd",
-          items: cart,
-          shipping: { name: "", address: { line1: "", city: "", postal_code: "" } }, // Dummy for init
-          email: "", // Will update on submit
-        }),
-      });
-
-      if (!response.ok) throw new Error("Failed to create payment intent");
-      const { client_secret } = await response.json();
-      clientSecret = client_secret;
-    } catch (error) {
-      console.error("PaymentIntent creation failed:", error);
-      document.getElementById("payment-result").innerHTML = `<div class="error">Setup error: ${error.message}. Please refresh.</div>`;
-      document.getElementById("payment-result").style.display = "block";
-      showToast("⚠️ Setup failed—refresh page.");
-      return;
-    }
-
-    // Now initialize elements with clientSecret
-    const elements = stripe.elements({ clientSecret });
+    const elements = stripe.elements({ mode: 'payment' });
     const paymentElement = elements.create("payment", { layout: "tabs" });
     paymentElement.mount("#payment-element");
 
-    // Hook into .order button click
-    const orderButton = document.querySelector('.order'); // Your animated button
+    const orderButton = document.querySelector('.order');
     if (orderButton) {
       orderButton.addEventListener('click', async (e) => {
-        e.preventDefault(); // Prevent immediate form submit
+        e.preventDefault();
 
         const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        if (total === 0 || cart.length === 0) return;
+        if (total === 0 || cart.length === 0) {
+          showToast("Cart is empty!");
+          return;
+        }
 
         // Validate form
         const name = document.getElementById("name").value.trim();
@@ -303,64 +270,63 @@ document.addEventListener("DOMContentLoaded", async () => {
         const city = document.getElementById("city").value.trim();
         const zip = document.getElementById("zip").value.trim();
         if (!name || !email || !address || !city || !zip) {
-          showToast("⚠️ Please fill all shipping fields.");
+          showToast("Please fill all fields.");
           return;
         }
 
         orderButton.disabled = true;
         const defaultSpan = orderButton.querySelector('.default');
-        if (defaultSpan) defaultSpan.textContent = 'Complete Order'; // Switch to animation start text
+        if (defaultSpan) defaultSpan.textContent = 'Complete Order';
 
         const shipping = {
           name,
-          address: {
-            line1: address,
-            city,
-            postal_code: zip,
-          },
+          address: { line1: address, city, postal_code: zip },
         };
 
         try {
-          // Optionally update PaymentIntent with shipping/email (if not set initially)
-          await fetch("/update-payment-intent", { // New endpoint? Or handle in Worker
+          // Create PaymentIntent on click
+          const response = await fetch("/create-payment-intent", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              client_secret,
+              amount: Math.round(total * 100),
+              currency: "usd",
+              items: cart,
               shipping,
               email,
             }),
           });
 
+          if (!response.ok) {
+            const errData = await response.json().catch(() => ({}));
+            throw new Error(errData.error || "Server error");
+          }
+          const { client_secret } = await response.json();
+
+          // Confirm with new client_secret
           const { error } = await stripe.confirmPayment({
             elements,
+            clientSecret,
             confirmParams: { 
               return_url: window.location.href,
-              receipt_email: email, // Send receipt
+              receipt_email: email,
             },
             redirect: "if_required",
           });
 
           if (error) throw error;
 
-          // Success: Clear cart, hide form, trigger animation
+          // Success
           localStorage.removeItem("cart");
-          paymentForm.style.display = 'none'; // Hide form during animation
-          document.getElementById("payment-result").innerHTML =
-            '<div class="success">Order confirmed—check your email. <a href="/">Continue Shopping</a></div>';
+          paymentForm.style.display = 'none';
+          document.getElementById("payment-result").innerHTML = '<div class="success">Order confirmed—check your email. <a href="/">Continue Shopping</a></div>';
           document.getElementById("payment-result").style.display = "block";
           showToast("✅ Payment successful!");
-
-          // Trigger truck animation
           triggerOrderAnimation(orderButton);
 
-          // After animation (10s), optionally show full success or redirect
-          setTimeout(() => {
-            // e.g., window.location.href = '/success'; or update UI
-          }, 10000);
+          setTimeout(() => {}, 10000); // Placeholder
 
         } catch (error) {
-          // Error: Revert button text, re-enable
           if (defaultSpan) defaultSpan.textContent = `Pay $${total.toFixed(2)}`;
           orderButton.disabled = false;
           document.getElementById("payment-result").innerHTML = `<div class="error">Error: ${error.message}</div>`;
@@ -378,4 +344,4 @@ window.removeFromCart = removeFromCart;
 window.updateCartUI = updateCartUI;
 window.updateSummary = updateSummary;
 window.populateOrderSummary = populateOrderSummary;
-window.triggerOrderAnimation = triggerOrderAnimation;
+window.triggerOrderAnimation = triggerOrderAnimation; // For manual triggers if needed
