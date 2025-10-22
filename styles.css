@@ -1,61 +1,67 @@
 /* =======================================================
-   Rainbow Tourmaline Tech – Modernized UI Theme
-   Polished for elegance, depth, and dark-mode harmony
+   Tourmaline Tech – Refined Modern UI
+   Balanced Teal–Blue Palette for Inclusive Tech Aesthetics
    ======================================================= */
 
 /* Light Mode Defaults */
 :root {
-    --bg-primary: #ffffff;
-    --bg-secondary: #f8f9fa;
-    --text-primary: #1a1a1a;
-    --text-secondary: #6c757d;
-    --accent-teal: #008080; /* Teal tourmaline */
-    --accent-pink: #ff69b4; /* Pink tourmaline */
-    --accent-purple: #9370db; /* Purple tourmaline */
-    --accent-green: #90ee90; /* Green tourmaline */
-    --border: #e9ecef;
-    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f7f9fb;
+  --text-primary: #1a1a1a;
+  --text-secondary: #6c757d;
+  --accent-teal: #009999; /* refined tech teal */
+  --accent-purple: #6c63ff; /* modern violet-blue */
+  --accent-green: #7ed957; /* cool lime highlight */
+  --border: #e5e8eb;
+  --shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-/* Dark Mode */
+/* =======================================================
+   Modernized Dark Mode — Subtle Depth and Warm Contrast
+   ======================================================= */
 html.dark {
-    --bg-primary: #121212;
-    --bg-secondary: #1e1e1e;
-    --text-primary: #ffffff;
-    --text-secondary: #adb5bd;
-    --accent-teal: #40e0d0;
-    --accent-pink: #ff1493;
-    --accent-purple: #ba55d3;
-    --accent-green: #32cd32;
-    --border: #333333;
-    --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-    background-color: var(--bg-primary) !important;
-    color: var(--text-primary) !important;
+  --bg-primary: #0f1115;     /* deep charcoal-blue */
+  --bg-secondary: #181b22;   /* surface */
+  --text-primary: #e5e7eb;   /* neutral white */
+  --text-secondary: #9ca3af; /* muted gray-blue */
+  --accent-teal: #3ccfcf;    /* refined teal */
+  --accent-purple: #7f7aff;  /* soft violet-blue */
+  --accent-green: #50fa7b;   /* neon accent */
+  --border: rgba(255, 255, 255, 0.08);
+  --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  background: radial-gradient(circle at 20% 20%, #10131a, #0c0e12 80%);
+  color: var(--text-primary);
+}
+
+html.dark .checkout-form-area,
+html.dark .order-summary {
+  background: linear-gradient(180deg, #1a1e26 0%, #11141b 100%);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 /* =======================================================
    Base
    ======================================================= */
-
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.7;
-    color: var(--text-primary);
-    background-color: var(--bg-primary);
-    transition: all 0.3s ease;
-    -webkit-font-smoothing: antialiased;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.7;
+  color: var(--text-primary);
+  background-color: var(--bg-primary);
+  transition: all 0.3s ease;
+  -webkit-font-smoothing: antialiased;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.25rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
 }
 
 /* =======================================================
@@ -64,11 +70,12 @@ body {
 a {
   color: var(--accent-teal);
   text-decoration: none;
-  transition: color 0.25s ease;
+  transition: color 0.25s ease, transform 0.2s ease;
 }
 a:hover {
-  color: var(--accent-purple);
-  text-decoration: underline;
+  color: var(--accent-teal);
+  text-decoration: none;
+  transform: translateY(-1px);
 }
 
 /* =======================================================
@@ -117,7 +124,7 @@ html.dark .toast {
   padding: 1rem 0;
 }
 html.dark .header {
-  background: rgba(18, 18, 18, 0.75);
+  background: rgba(20, 22, 28, 0.75);
 }
 .header .container {
   display: flex;
@@ -145,7 +152,7 @@ html.dark .header {
   left: 0;
   width: 0%;
   height: 2px;
-  background: var(--accent-pink);
+  background: var(--accent-teal);
   transition: width 0.3s ease;
 }
 .nav-list a:hover::after {
@@ -170,7 +177,7 @@ html.dark .header {
 .hero {
   text-align: center;
   padding: 5rem 1rem;
-  background: linear-gradient(125deg, var(--accent-teal), var(--accent-purple), var(--accent-pink));
+  background: linear-gradient(125deg, var(--accent-teal), var(--accent-purple));
   color: #fff;
   border-radius: 0 0 2rem 2rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -192,7 +199,7 @@ html.dark .header {
   padding: 0.9rem 2.2rem;
   font-weight: 700;
   font-size: 1.1rem;
-  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
   color: #fff;
   text-decoration: none;
   display: inline-block;
@@ -250,104 +257,74 @@ select:focus {
 }
 
 /* =======================================================
-   Products
+   Checkout Grid Layout
    ======================================================= */
-.products {
-  padding: 3rem 0;
-}
-.products h2 {
-  text-align: center;
-  margin-bottom: 2.5rem;
-  font-size: 2.25rem;
-  font-weight: 700;
-}
-.products-grid {
+.checkout-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: 2fr 1fr;
   gap: 2rem;
+  margin-top: 2rem;
+  align-items: start;
 }
-.product-card {
-  border-radius: 14px;
-  overflow: hidden;
+.checkout-form-area,
+.order-summary {
   background: var(--bg-secondary);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 2rem;
+  box-shadow: var(--shadow);
 }
-.product-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+.checkout-form-area h1 {
+  margin-bottom: 1rem;
+  color: var(--accent-teal);
 }
-.product-card img {
-  width: 100%;
-  height: 220px;
-  object-fit: cover;
-  transition: transform 0.4s ease;
-}
-.product-card:hover img {
-  transform: scale(1.05);
-}
-.product-card h3 {
-  font-size: 1.25rem;
-  font-weight: 600;
-  padding: 1rem 1.25rem 0.5rem;
-}
-.product-card p {
-  padding: 0 1.25rem 1rem;
-  color: var(--text-secondary);
-}
-.price {
-  font-size: 1.15rem;
-  font-weight: 700;
-  padding: 0 1.25rem 1.25rem;
-  color: var(--accent-green);
-}
-
-/* =======================================================
-   Cart & Checkout
-   ======================================================= */
-.cart {
-  padding: 2rem 0;
+.order-summary h2 {
+  margin-bottom: 1rem;
+  color: var(--accent-purple);
   text-align: center;
 }
-.cart-item {
+#order-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid var(--border);
+  padding: 0.75rem;
+  border-radius: 8px;
+  background: var(--bg-primary);
+  box-shadow: var(--shadow);
+}
+.order-item img {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  object-fit: cover;
+}
+.order-item-details {
+  flex: 1;
+}
+.order-item-details h4 {
+  margin-bottom: 0.25rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+}
+.order-item-details p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  line-height: 1.3;
+}
+.order-total {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 10px 0;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--bg-secondary);
-}
-.checkout-container {
-  max-width: 640px;
-  margin: 3rem auto;
-  padding: 2.5rem;
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.05);
-}
-html.dark .checkout-container {
-  background: rgba(30, 30, 30, 0.75);
-}
-.checkout-container h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  font-size: 2rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-.cart-summary {
-  background: var(--bg-primary);
-  padding: 1.5rem;
-  border-radius: 12px;
-  margin-bottom: 1.5rem;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow);
+  margin-top: 1.5rem;
+  font-size: 1.1rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
 }
 
 /* =======================================================
@@ -366,32 +343,8 @@ html.dark .checkout-container {
 }
 
 /* =======================================================
-   Contact & Footer
+   Footer
    ======================================================= */
-.contact {
-  padding: 3rem 0;
-  text-align: center;
-}
-.contact-form {
-  max-width: 600px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-.contact-form label {
-  text-align: left;
-  font-weight: 500;
-}
-.contact-form button {
-  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
-  color: #fff;
-  border: none;
-  padding: 1rem;
-  border-radius: 10px;
-  cursor: pointer;
-  font-size: 1rem;
-}
 .footer {
   background: var(--bg-secondary);
   text-align: center;
@@ -415,14 +368,18 @@ html.dark .checkout-container {
     gap: 1rem;
     text-align: center;
   }
-  .hero h2 {
-    font-size: 2.25rem;
+  .checkout-grid {
+    grid-template-columns: 1fr;
   }
-  .hero p {
-    font-size: 1rem;
+  .order-summary {
+    order: -1;
   }
-  .checkout-container {
-    margin: 1.5rem;
+  .checkout-form-area,
+  .order-summary {
     padding: 1.5rem;
+  }
+  .order-item img {
+    width: 50px;
+    height: 50px;
   }
 }
