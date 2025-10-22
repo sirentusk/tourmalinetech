@@ -25,7 +25,7 @@ export default {
     try {
       stripe = new Stripe(env.STRIPE_KEY, {
         httpClient: Stripe.createFetchHttpClient(),
-        apiVersion: '2025-01-27',
+        apiVersion: '2025-01-27', // Supports latest features like enhanced metadata
       });
     } catch (error) {
       console.error('Stripe init failed:', error);
@@ -36,7 +36,7 @@ export default {
     }
 
     // ===========================================================
-    // 🟣 1️⃣ Create Checkout Session (Stripe-hosted)
+    // 🟣 1️⃣ Create Checkout Session (Stripe-hosted) – Optional/Unused in Current Flow
     // ===========================================================
     if (url.pathname === '/create-checkout-session' && request.method === 'POST') {
       console.log('Hit /create-checkout-session');
@@ -85,12 +85,12 @@ export default {
     }
 
     // ===========================================================
-    // 🟢 2️⃣ Create Payment Intent (Stripe Elements)
+    // 🟢 2️⃣ Create Payment Intent (Stripe Elements) – Active Flow
     // ===========================================================
     if (url.pathname === '/create-payment-intent' && request.method === 'POST') {
       console.log('Hit /create-payment-intent');
       try {
-        const { amount, currency, items, shipping } = await request.json();
+        const { amount, currency, items, shipping, email } = await request.json(); // Added email destructure for metadata
 
         if (!amount || !items) {
           return new Response(JSON.stringify({ error: 'Missing payment data' }), {
@@ -105,14 +105,16 @@ export default {
           description: 'Tourmaline Tech Order',
           metadata: {
             items: JSON.stringify(items.map(i => `${i.name} x${i.quantity}`)),
+            email: email || '', // Pass email for receipts/notifications
           },
+          receipt_email: email || undefined, // Auto-send receipt if provided
           shipping: {
             name: shipping?.name || 'Customer',
             address: {
               line1: shipping?.address?.line1 || '',
               city: shipping?.address?.city || '',
               postal_code: shipping?.address?.postal_code || '',
-              country: 'AU',
+              country: 'AU', // Hardcoded—update for multi-country if needed
             },
           },
           automatic_payment_methods: { enabled: true },
@@ -141,12 +143,13 @@ export default {
         const event = stripe.webhooks.constructEvent(
           payload,
           sig,
-          env.STRIPE_WEBHOOK_SECRET // create this in dashboard → secrets
+          env.STRIPE_WEBHOOK_SECRET // Ensure this is set in Wrangler secrets
         );
 
         if (event.type === 'payment_intent.succeeded') {
           const intent = event.data.object;
           const items = intent.metadata?.items || 'Unknown items';
+          const customerEmail = intent.metadata?.email || intent.receipt_email || 'N/A'; // Fallback to metadata or receipt_email
 
           // 📨 Send push to ntfy.sh
           await fetch('https://ntfy.sh/TourmalineTech', {
@@ -155,7 +158,7 @@ export default {
               'Title': '📦 New TourmalineTech Order',
               'Priority': 'high'
             },
-            body: `✅ ${intent.shipping?.name || 'Customer'} paid $${(intent.amount / 100).toFixed(2)}\nItems: ${items}\nEmail: ${intent.receipt_email || 'N/A'}`
+            body: `✅ ${intent.shipping?.name || 'Customer'} paid $${(intent.amount / 100).toFixed(2)}\nItems: ${items}\nEmail: ${customerEmail}`
           });
 
           console.log('📲 ntfy notification sent');
