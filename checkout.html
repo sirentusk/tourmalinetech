@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout | Tourmaline Tech</title>
-    <meta property="og:title" content="Tourmaline Tech">
-    <meta property="twitter:title" content="Tourmaline Tech">
+    <meta property="og:title" content="Checkout | Tourmaline Tech">
+    <meta property="twitter:title" content="Checkout | Tourmaline Tech">
     <meta property="og:site_name" content="Tourmaline Tech">
     <meta property="og:description" content="Elevate your tech game with Tourmaline Tech Store: sleek gadgets, cutting-edge electronics, and must-have accessories that redefine innovation. Shop now!">
     <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
@@ -19,10 +19,9 @@
     <link rel="alternate" href="https://tourmalinetech.com/checkout" hreflang="en">
     <link rel="canonical" href="https://tourmalinetech.com/checkout">
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="https://js.stripe.com/v3/"></script>
 </head>
 <body>
-    <header class="header"> <!-- Reuse from index.html for consistency -->
+    <header class="header">
         <div class="container">
             <div class="logo">
                 <img src="tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img">
@@ -30,7 +29,6 @@
             <a href="/">← Back to Shop</a>
         </div>
     </header>
-
     <main class="checkout-container">
         <h1>Secure Checkout</h1>
         <div id="cart-summary" class="cart-summary"></div>
@@ -47,5 +45,6 @@
             <p>&copy; 2025 Tourmaline Tech. All rights reserved. | Powered by Cloudflare & Stripe</p>
         </div>
     </footer>
+    <script src="app.js"></script>  <!-- Add this -->
 </body>
 </html>
