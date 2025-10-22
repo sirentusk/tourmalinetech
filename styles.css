@@ -856,3 +856,21 @@ select:focus {
   .sidebar-stack .order-card { order: 1; }
   .sidebar-stack .promos-card { order: 3; }
 }
+
+/* --- Ensure two clearly separate boxes --- */
+.sidebar-stack { display: grid; gap: 1rem; }
+.sidebar-stack .card {
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.02) inset;
+}
+.sidebar-stack .order-card { order: 1; }
+.sidebar-stack .promos-card { order: 2; }
+
+/* Push Promotions beneath on mobile */
+@media (max-width: 768px) {
+  .sidebar-stack .order-card { order: 1; }
+  .sidebar-stack .promos-card { order: 3; }
+}
