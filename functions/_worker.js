@@ -4,17 +4,12 @@ export default {
   async fetch(request, env, ctx) {
     const url = new URL(request.url);
 
-    // Skip Functions for static assets
+    // --- Skip static assets for speed
     if (url.pathname.match(/\.(css|js|png|jpg|svg|woff2?|ttf|eot|txt)$/)) {
       return fetch(request);
     }
 
-    // Test endpoint: GET /test-functions
-    if (url.pathname === '/test-functions' && request.method === 'GET') {
-      return new Response('Pages Functions are running! Stripe key exists: ' + (env.STRIPE_KEY ? 'Yes' : 'No'), { status: 200 });
-    }
-
-    // Add CORS for good measure (same-origin usually fine, but helps if testing cross-site)
+    // --- CORS (for safety)
     const corsHeaders = {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
@@ -25,11 +20,12 @@ export default {
       return new Response(null, { headers: corsHeaders });
     }
 
+    // --- Initialize Stripe
     let stripe;
     try {
       stripe = new Stripe(env.STRIPE_KEY, {
         httpClient: Stripe.createFetchHttpClient(),
-        apiVersion: '2025-09-30.clover',
+        apiVersion: '2025-01-27',
       });
     } catch (error) {
       console.error('Stripe init failed:', error);
@@ -39,9 +35,11 @@ export default {
       });
     }
 
-    // POST /create-checkout-session
+    // ===========================================================
+    // 🟣 1️⃣ Existing: Create Checkout Session (Stripe-hosted)
+    // ===========================================================
     if (url.pathname === '/create-checkout-session' && request.method === 'POST') {
-      console.log('Hit /create-checkout-session'); // Log to confirm route match
+      console.log('Hit /create-checkout-session');
       try {
         const { items } = await request.json();
 
@@ -72,7 +70,6 @@ export default {
           success_url: `${url.origin}/?success=true`,
           cancel_url: `${url.origin}/?canceled=true`,
           metadata: { items: JSON.stringify(items) },
-          customer_email: null,
         });
 
         return new Response(JSON.stringify({ sessionId: session.id }), {
@@ -87,9 +84,50 @@ export default {
       }
     }
 
-    // ... (keep your /stock and /stripe/webhook handlers unchanged)
+    // ===========================================================
+    // 🟢 2️⃣ New: Create Payment Intent (for Stripe Elements)
+    // ===========================================================
+    if (url.pathname === '/create-payment-intent' && request.method === 'POST') {
+      console.log('Hit /create-payment-intent');
+      try {
+        const { amount, currency, items, shipping } = await request.json();
 
-    // Fallback: Static files
-    return fetch(request);
-  },
-};
+        if (!amount || !items) {
+          return new Response(JSON.stringify({ error: 'Missing payment data' }), {
+            status: 400,
+            headers: { 'Content-Type': 'application/json', ...corsHeaders },
+          });
+        }
+
+        const paymentIntent = await stripe.paymentIntents.create({
+          amount,
+          currency,
+          description: 'Tourmaline Tech Order',
+          metadata: {
+            items: JSON.stringify(items.map(i => `${i.name} x${i.quantity}`)),
+          },
+          shipping: {
+            name: shipping?.name || 'Customer',
+            address: {
+              line1: shipping?.address?.line1 || '',
+              city: shipping?.address?.city || '',
+              postal_code: shipping?.address?.postal_code || '',
+              country: 'AU',
+            },
+          },
+          automatic_payment_methods: { enabled: true },
+        });
+
+        return new Response(JSON.stringify({ client_secret: paymentIntent.client_secret }), {
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      } catch (error) {
+        console.error('Payment intent error:', error);
+        return new Response(JSON.stringify({ error: error.message }), {
+          status: 400,
+          headers: { 'Content-Type': 'application/json', ...corsHeaders },
+        });
+      }
+    }
+
+    // ================================
