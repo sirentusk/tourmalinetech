@@ -50,6 +50,17 @@ body {
     padding: 0 1rem;
 }
 
+a {
+  color: var(--accent-teal);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-purple);
+  text-decoration: underline;
+}
+
 /* Header */
 .header {
     background: var(--bg-secondary);
