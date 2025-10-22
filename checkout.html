@@ -16,12 +16,11 @@
   <meta name="theme-color" content="#008080" />
   <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
   <link rel="canonical" href="https://tourmalinetech.com/checkout" />
-    <script src="https://js.stripe.com/v3/"></script>
-    <link rel="stylesheet" type="text/css" href="styles.css">
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://js.stripe.com/v3/"></script> <!-- Stripe SDK -->
 </head>
 
 <body>
-    
   <header class="header">
     <div class="container">
       <div class="logo">
@@ -36,10 +35,8 @@
     </div>
   </header>
 
-  <!-- Main Checkout Area -->
   <main>
     <section class="checkout-grid container">
-      <!-- Left Column – Form -->
       <div class="checkout-form-area">
         <h1>Checkout</h1>
 
@@ -72,13 +69,16 @@
             </div>
           </div>
 
-          <p>Disclaimer: Card details are stored through Stripe not locally by Tourmaline Tech to protect user privacy.</p>
-
+          <h2>Payment</h2>
           <div id="payment-element"></div>
 
-          <!-- Animated Submit Button (replaces old #submit) -->
+          <!-- Privacy Disclaimer (expanded and styled) -->
+          <div class="disclaimer">
+            <small>Disclaimer: Card details are stored through the Stripe platform, not locally by Tourmaline Tech, to protect user privacy. We have no records of your card details.</small>
+          </div>
+
           <button type="submit" class="order" id="submit">
-            <span class="default">Pay $0.00</span> <!-- JS will update this dynamically -->
+            <span class="default">Pay $0.00</span>
             <span class="success">
               Order Placed
               <svg viewBox="0 0 12 10">
@@ -100,7 +100,6 @@
         </form>
       </div>
 
-      <!-- Right Column – Order Summary -->
       <aside class="order-summary">
         <h2>Your Order</h2>
         <div id="order-items"></div>
