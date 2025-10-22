@@ -1,8 +1,3 @@
-# 1. DELETE broken file
-rm app.js
-
-# 2. CREATE FRESH app.js
-cat > app.js << 'EOF'
 console.log('app.js loaded successfully');
 
 // Dark mode (shared, with toggle if button exists)
@@ -190,4 +185,3 @@ window.addToCart = addToCart;
 window.removeFromCart = removeFromCart;
 window.updateCartUI = updateCartUI;
 window.updateSummary = updateSummary;
-EOF
