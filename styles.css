@@ -1,65 +1,61 @@
 /* =======================================================
-   Tourmaline Tech – Rainbow Revival (Modernized)
-   Elegant, gem-toned theme with subtle luminance depth
+   Rainbow Tourmaline Tech – Modernized UI Theme
+   Polished for elegance, depth, and dark-mode harmony
    ======================================================= */
 
 /* Light Mode Defaults */
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #f8f9fa;
-  --text-primary: #1a1a1a;
-  --text-secondary: #6c757d;
-
-  /* Rainbow Tourmaline Palette */
-  --accent-teal: #008080;     /* teal tourmaline */
-  --accent-pink: #ff69b4;     /* pink tourmaline */
-  --accent-purple: #9370db;   /* purple tourmaline */
-  --accent-green: #90ee90;    /* green tourmaline */
-
-  --border: #e9ecef;
-  --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --text-primary: #1a1a1a;
+    --text-secondary: #6c757d;
+    --accent-teal: #008080; /* Teal tourmaline */
+    --accent-pink: #ff69b4; /* Pink tourmaline */
+    --accent-purple: #9370db; /* Purple tourmaline */
+    --accent-green: #90ee90; /* Green tourmaline */
+    --border: #e9ecef;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* =======================================================
-   Dark Mode – Gemstone Gradient Refinement
-   ======================================================= */
+/* Dark Mode */
 html.dark {
-  --bg-primary: #121214;
-  --bg-secondary: #1a1c20;
-  --text-primary: #f4f4f5;
-  --text-secondary: #b0b3b8;
-  --accent-teal: #40e0d0;
-  --accent-pink: #ff1493;
-  --accent-purple: #ba55d3;
-  --accent-green: #32cd32;
-  --border: rgba(255, 255, 255, 0.08);
-  --shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-
-  background: radial-gradient(circle at 20% 20%, #181820, #0e0f12 90%);
-  color: var(--text-primary);
+    --bg-primary: #121212;
+    --bg-secondary: #1e1e1e;
+    --text-primary: #ffffff;
+    --text-secondary: #adb5bd;
+    --accent-teal: #40e0d0;
+    --accent-pink: #ff1493;
+    --accent-purple: #ba55d3;
+    --accent-green: #32cd32;
+    --border: #333333;
+    --shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
 }
 
 /* =======================================================
-   Base Layout
+   Base
    ======================================================= */
+
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
 body {
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  line-height: 1.7;
-  color: var(--text-primary);
-  background: var(--bg-primary);
-  transition: background-color 0.3s ease, color 0.3s ease;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.7;
+    color: var(--text-primary);
+    background-color: var(--bg-primary);
+    transition: all 0.3s ease;
+    -webkit-font-smoothing: antialiased;
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1.25rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1.25rem;
 }
 
 /* =======================================================
@@ -68,28 +64,60 @@ body {
 a {
   color: var(--accent-teal);
   text-decoration: none;
-  transition: color 0.25s ease, transform 0.2s ease;
+  transition: color 0.25s ease;
 }
 a:hover {
-  color: var(--accent-teal);
-  text-decoration: none;
-  transform: translateY(-1px);
+  color: var(--accent-purple);
+  text-decoration: underline;
 }
 
 /* =======================================================
-   Header
+   Toast Notification
+   ======================================================= */
+.toast {
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  color: var(--text-primary);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  font-weight: 600;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  transform-origin: top center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+html.dark .toast {
+  background: rgba(30, 30, 30, 0.85);
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+/* =======================================================
+   Header & Nav
    ======================================================= */
 .header {
   background: rgba(255, 255, 255, 0.75);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--border);
+  box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
   position: sticky;
   top: 0;
   z-index: 100;
   padding: 1rem 0;
 }
 html.dark .header {
-  background: rgba(18, 18, 20, 0.85);
+  background: rgba(18, 18, 18, 0.75);
 }
 .header .container {
   display: flex;
@@ -137,12 +165,12 @@ html.dark .header {
 }
 
 /* =======================================================
-   Hero Section
+   Hero
    ======================================================= */
 .hero {
   text-align: center;
   padding: 5rem 1rem;
-  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
+  background: linear-gradient(125deg, var(--accent-teal), var(--accent-purple), var(--accent-pink));
   color: #fff;
   border-radius: 0 0 2rem 2rem;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
@@ -150,11 +178,29 @@ html.dark .header {
 .hero h2 {
   font-size: 3rem;
   font-weight: 800;
+  letter-spacing: -0.5px;
+  margin-bottom: 1rem;
 }
 .hero p {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  opacity: 0.9;
   max-width: 640px;
-  margin: 1rem auto 2rem;
+  margin: 0 auto 2rem;
+}
+.cta-button {
+  border-radius: 50px;
+  padding: 0.9rem 2.2rem;
+  font-weight: 700;
+  font-size: 1.1rem;
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+  color: #fff;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.cta-button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* =======================================================
@@ -204,62 +250,148 @@ select:focus {
 }
 
 /* =======================================================
-   Checkout Layout
+   Products
    ======================================================= */
-.checkout-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 2rem;
-  margin-top: 2rem;
-  align-items: start;
+.products {
+  padding: 3rem 0;
 }
-.checkout-form-area,
-.order-summary {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 2rem;
-  box-shadow: var(--shadow);
-}
-.checkout-form-area h1 {
-  margin-bottom: 1rem;
-  color: var(--accent-teal);
-}
-.order-summary h2 {
-  color: var(--accent-purple);
+.products h2 {
   text-align: center;
-  margin-bottom: 1rem;
+  margin-bottom: 2.5rem;
+  font-size: 2.25rem;
+  font-weight: 700;
 }
-.order-item {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  border: 1px solid var(--border);
-  padding: 0.75rem;
-  border-radius: 8px;
-  background: var(--bg-primary);
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
 }
-.order-item img {
-  width: 60px;
-  height: 60px;
-  border-radius: 6px;
+.product-card {
+  border-radius: 14px;
+  overflow: hidden;
+  background: var(--bg-secondary);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+.product-card img {
+  width: 100%;
+  height: 220px;
   object-fit: cover;
+  transition: transform 0.4s ease;
 }
-.order-item-details {
-  flex: 1;
+.product-card:hover img {
+  transform: scale(1.05);
 }
-.order-item-details h4 {
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
+.product-card h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  padding: 1rem 1.25rem 0.5rem;
 }
-.order-item-details p {
+.product-card p {
+  padding: 0 1.25rem 1rem;
   color: var(--text-secondary);
-  font-size: 0.9rem;
+}
+.price {
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 0 1.25rem 1.25rem;
+  color: var(--accent-green);
 }
 
 /* =======================================================
-   Footer
+   Cart & Checkout
    ======================================================= */
+.cart {
+  padding: 2rem 0;
+  text-align: center;
+}
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-secondary);
+}
+.checkout-container {
+  max-width: 640px;
+  margin: 3rem auto;
+  padding: 2.5rem;
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.05);
+}
+html.dark .checkout-container {
+  background: rgba(30, 30, 30, 0.75);
+}
+.checkout-container h1 {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 2rem;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent-teal), var(--accent-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.cart-summary {
+  background: var(--bg-primary);
+  padding: 1.5rem;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* =======================================================
+   Forms
+   ======================================================= */
+.form-group {
+  margin-bottom: 1.25rem;
+  text-align: left;
+}
+.form-row {
+  display: flex;
+  gap: 1rem;
+}
+.form-row .half {
+  flex: 1;
+}
+
+/* =======================================================
+   Contact & Footer
+   ======================================================= */
+.contact {
+  padding: 3rem 0;
+  text-align: center;
+}
+.contact-form {
+  max-width: 600px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.contact-form label {
+  text-align: left;
+  font-weight: 500;
+}
+.contact-form button {
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent-purple));
+  color: #fff;
+  border: none;
+  padding: 1rem;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 1rem;
+}
 .footer {
   background: var(--bg-secondary);
   text-align: center;
@@ -283,18 +415,14 @@ select:focus {
     gap: 1rem;
     text-align: center;
   }
-  .checkout-grid {
-    grid-template-columns: 1fr;
+  .hero h2 {
+    font-size: 2.25rem;
   }
-  .order-summary {
-    order: -1;
+  .hero p {
+    font-size: 1rem;
   }
-  .checkout-form-area,
-  .order-summary {
+  .checkout-container {
+    margin: 1.5rem;
     padding: 1.5rem;
-  }
-  .order-item img {
-    width: 50px;
-    height: 50px;
   }
 }
