@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Checkout | Tourmaline Tech</title>
-  <meta property="og:title" content="Checkout | Tourmaline Tech" />
-  <meta property="og:site_name" content="Tourmaline Tech" />
-  <meta property="og:description" content="Secure checkout — complete your Tourmaline Tech order with fast shipping and Stripe payments." />
-  <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
-  <meta property="og:url" content="https://tourmalinetech.com/checkout" />
-  <meta property="og:locale" content="en_AU" />
-  <meta property="og:type" content="website" />
-  <meta name="author" content="Megan Judge" />
-  <meta name="robots" content="index, follow" />
-  <meta name="theme-color" content="#008080" />
+  <meta property="og:title" content="Checkout | Tourmaline Tech">
+  <meta property="og:site_name" content="Tourmaline Tech">
+  <meta property="og:description" content="Secure checkout — complete your Tourmaline Tech order with fast shipping and Stripe payments.">
+  <meta property="og:image" content="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
+  <meta property="og:url" content="https://tourmalinetech.com/checkout">
+  <meta property="og:locale" content="en_AU">
+  <meta property="og:type" content="website">
+  <meta name="author" content="Megan Judge">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#008080">
   <!-- Optional: override API base if your worker runs on a different host -->
   <!-- <meta name="x-api-base" content="https://your-worker.workers.dev"> -->
-  <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png" />
-  <link rel="canonical" href="https://tourmalinetech.com/checkout" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="https://tourmalinetech.com/images/tourmaline-tech-logo.png">
+  <link rel="canonical" href="https://tourmalinetech.com/checkout">
+  <link rel="stylesheet" href="styles.css">
   <script src="https://js.stripe.com/v3/"></script>
 </head>
 
@@ -26,7 +26,7 @@
   <header class="header">
     <div class="container">
       <div class="logo">
-        <img src="images/tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img" />
+        <img src="images/tourmaline-tech-logo.png" alt="Tourmaline Tech Logo" class="logo-img">
       </div>
       <nav class="nav">
         <ul class="nav-list">
@@ -49,7 +49,7 @@
           <h2>Contact</h2>
           <div class="form-group">
             <label for="email">Email</label>
-            <input type="email" id="email" name="email" autocomplete="email" required />
+            <input type="email" id="email" name="email" autocomplete="email" required>
           </div>
           <div class="form-group">
             <label for="phone">Phone (for delivery updates)</label>
@@ -60,30 +60,30 @@
           <h2>Shipping Address</h2>
           <div class="form-group">
             <label for="name">Full Name</label>
-            <input type="text" id="name" name="name" autocomplete="name" required />
+            <input type="text" id="name" name="name" autocomplete="name" required>
           </div>
           <div class="form-group">
             <label for="address">Address line 1</label>
-            <input type="text" id="address" name="address" autocomplete="address-line1" required />
+            <input type="text" id="address" name="address" autocomplete="address-line1" required>
           </div>
           <div class="form-group">
             <label for="address2">Address line 2 (optional)</label>
-            <input type="text" id="address2" name="address2" autocomplete="address-line2" />
+            <input type="text" id="address2" name="address2" autocomplete="address-line2">
           </div>
           <div class="form-row">
             <div class="form-group half">
               <label for="city">City</label>
-              <input type="text" id="city" name="city" autocomplete="address-level2" required />
+              <input type="text" id="city" name="city" autocomplete="address-level2" required>
             </div>
             <div class="form-group half">
               <label for="state">State / Region</label>
-              <input type="text" id="state" name="state" autocomplete="address-level1" />
+              <input type="text" id="state" name="state" autocomplete="address-level1">
             </div>
           </div>
           <div class="form-row">
             <div class="form-group half">
               <label for="zip">Postal Code</label>
-              <input type="text" id="zip" name="zip" autocomplete="postal-code" required />
+              <input type="text" id="zip" name="zip" autocomplete="postal-code" required>
             </div>
             <div class="form-group half">
               <label for="country">Country</label>
@@ -164,11 +164,13 @@
         </div>
 
         <!-- ===================== Right: Summary + promos/consents ===================== -->
-        <aside class="order-summary sidebar-stack">\n  <section class="card order-card">
-</div>
+        <aside class="order-summary sidebar-stack">
+          <section class="card order-card">
+        </div>
 
         <!-- ===================== Right: Summary + promos/consents ===================== -->
-        <aside class="order-summary sidebar-stack">\n  <section class="card order-card">
+        <aside class="order-summary sidebar-stack">
+          <section class="card order-card">
           <h2>Your Order</h2>
           <div id="order-items"></div>
 
@@ -257,7 +259,8 @@
             <div class="lines"></div>
           </button>
           <div id="payment-result"></div>
-          </section>\n</aside>
+          </section>
+        </aside>
       </section>
     </form>
   </main>
